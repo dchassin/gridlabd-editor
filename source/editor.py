@@ -22,20 +22,6 @@ def stderr(*msg,file=sys.stderr):
     print(*msg,file=file)
 
 #
-# GridLAB-D link
-#
-result = subprocess.run("/usr/local/bin/gridlabd --version=install".split(),capture_output=True)
-if not result:
-    stderr("ERROR: GridLAB-D is not installed on this system")
-    quit(-1)
-install_path = result.stdout.decode("utf-8").strip()
-try:
-    import gridlabd
-except:
-    stderr("ERROR: GridLAB-D is not installed for this python environment")
-    quit(-1)
-
-#
 # Tkinter module
 #
 try:
@@ -71,17 +57,6 @@ class TkErrorCatcher:
         except Exception as err:
             root.exception()
 tk.CallWrapper = TkErrorCatcher
-
-#
-# Global variables
-#
-title = gridlabd.__title__
-version = gridlabd.__version__.split('-')[0]
-build = gridlabd.version()["build"]
-branch = gridlabd.version()["branch"] 
-python = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro} ({sys.version_info.releaselevel})"
-system = f"{os.uname().sysname} {os.uname().release} ({os.uname().machine})"
-library = gridlabd.__file__
 
 # 
 # Load/initialize preferences
@@ -119,8 +94,36 @@ except:
             "value" : True,
             "description" : "Enable output of exception traceback data",
             },
+        "GridLAB-D install" : {
+            "value" : "/usr/local/bin/gridlabd",
+            "description" : "GridLAB-D executable",
+            }
         }
 
+#
+# GridLAB-D link
+#
+result = subprocess.run(f"{preferences['GridLAB-D install']['value']} --version=install".split(),capture_output=True)
+if not result:
+    stderr("ERROR: GridLAB-D is not installed on this system")
+    quit(-1)
+install_path = result.stdout.decode("utf-8").strip()
+try:
+    import gridlabd
+except:
+    stderr("ERROR: GridLAB-D is not installed for this python environment")
+    quit(-1)
+
+#
+# Global variables
+#
+title = gridlabd.__title__
+version = gridlabd.__version__.split('-')[0]
+build = gridlabd.version()["build"]
+branch = gridlabd.version()["branch"] 
+python = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro} ({sys.version_info.releaselevel})"
+system = f"{os.uname().sysname} {os.uname().release} ({os.uname().machine})"
+library = gridlabd.__file__
 
 #
 # Last run info
