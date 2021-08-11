@@ -41,7 +41,7 @@ default_preferences = {
         }
     }
 
-class Preferences:
+class Preferences(dict):
 
     def __init__(self,filename=default_filename):
         """Create preferences object
@@ -72,10 +72,10 @@ class Preferences:
         """
         if filename:
             with open(filename,"r") as f:
-                self.preferences = json.load(f)
+                self = json.load(f)
                 self.filename = filename
         else:
-            self.preferences = default_preferences
+            self = default_preferences
             self.filename = default_filename
 
     def save(self,filename=None):
@@ -92,30 +92,13 @@ class Preferences:
 
         raise NotImplementedError(f"Preferences.save(filename={filename}) is not implemented yet")
 
-    def get(self,key):
-
-        raise NotImplementedError(f"Preferences.get(key={key}) is not implemented yet")
-
-    def set(self,key,value):
-
-        raise NotImplementedError(f"Preferences.set(key={key},value={value}) is not implemented yet")
-
-    def keys(self,sort='ascending'):
-        """Get list of valid keys
-
-        PARAMETERS:
-
-        RETURNS:
-        """
-        result = self.preferences.keys()
-        if sort == None:
-            return result
-        elif sort == 'ascending':
-            sort = False
-        elif sort == 'descending':
-            sort = True
-        else:
-            raise ValueError(f"sort={sort} is not valid")
-        return result.sort(key=str.lower,reverse=sort)
-
 import unittest
+
+class PreferencesTest(unittest.TestCase):
+
+    def test_init(self):
+        self.assertEqual(Preferences(filename=None).keys(),default_preferences.keys())
+
+if __name__ == '__main__':
+    print(Preferences(filename=None))
+    unittest.main()
