@@ -12,6 +12,8 @@ import json
 import subprocess
 import webbrowser
 
+editor_path = os.path.split(__file__)[0]
+
 #
 # Console output
 #
@@ -108,6 +110,10 @@ if not result:
     stderr("ERROR: GridLAB-D is not installed on this system")
     quit(-1)
 install_path = result.stdout.decode("utf-8").strip()
+bin_path = install_path + "/bin"
+lib_path = install_path + "/lib/gridlabd"
+include_path = install_path + "/include/gridlabd"
+share_path = install_path + "/share/gridlabd"
 try:
     import gridlabd
 except:
@@ -284,7 +290,7 @@ class MenuBar(Menu):
         
         self.model_menu.add_separator()     
         
-        self.model_menu.add_command(label="Settings...", command=main.model_build)
+        self.model_menu.add_command(label="Settings...", command=main.model_settings)
 
         self.add_cascade(label="Model", menu=self.model_menu)
 
@@ -611,10 +617,10 @@ class Editor(Tk):
         messagebox.showerror(f"Configure",f"Modify is not available")
 
     def model_template_manager(self,event=None):
-        os.system("/usr/local/bin/python3 /usr/local/share/gridlabd/template.py &")
+        os.system(f"/usr/local/bin/python3 {editor_path}/template.py &")
 
     def model_template_choose(self,event=None):
-        initialdir = "/usr/local/share/gridlabd/template"
+        initialdir = f"{share_path}/template"
         if not os.path.exists(initialdir):
             self.model_template_manager
         template = filedialog.askopenfilename(
@@ -627,10 +633,10 @@ class Editor(Tk):
             self.output(f"Template {self.template} added")
 
     def model_library_manager(self,event=None):
-        os.system("/usr/local/bin/python3 /usr/local/share/gridlabd/library.py &")
+        os.system(f"/usr/local/bin/python3 {editor_path}/library.py &")
 
     def model_library_choose(self,event=None):
-        initialdir = "/usr/local/share/gridlabd/library"
+        initialdir = f"{share_path}/library"
         if not os.path.exists(initialdir):
             self.model_library_manager
         library = filedialog.askopenfilename(
@@ -643,10 +649,10 @@ class Editor(Tk):
             self.output(f"Library {self.library} added")
 
     def model_weather_manager(self,event=None):
-        os.system("/usr/local/bin/python3 /usr/local/share/gridlabd/weather.py &")
+        os.system(f"/usr/local/bin/python3 {editor_path}/weather.py &")
 
     def model_weather_choose(self,event=None):
-        initialdir = "/usr/local/share/gridlabd/weather"
+        initialdir = f"{share_path}/weather"
         if not os.path.exists(initialdir):
             self.model_weather_manager
         weather = filedialog.askopenfilename(
@@ -657,6 +663,17 @@ class Editor(Tk):
         if weather:
             self.weather = weather
             self.output(f"Weather {self.weather} added")
+
+    def model_settings(self,event=None):
+        initialdir = "/usr/local/opt/gridlabd"
+        folder = None
+        while not folder:
+            folder = filedialog.askdirectory(title="Choose GridLAB-D version",initialdir=initialdir)
+            if not folder:
+                return
+            if os.path.exists(folder+"/bin/gridlabd"):
+                folder = None
+        preferences["GridLAB-D install"] = folder
 
     #
     # Help
@@ -1175,7 +1192,7 @@ class ImportDialog(simpledialog.Dialog):
         self.outputtype = None
         self.result = None
 
-        config = subprocess.run(f"/usr/local/bin/python3 {install_path}/share/gridlabd/{inputext[1:]}2{outputext[1:]}.py --config".split(),capture_output=True)
+        config = subprocess.run(f"/usr/local/bin/python3 {share_path}/{inputext[1:]}2{outputext[1:]}.py --config".split(),capture_output=True)
         Label(self,text=f"Input {self.inputname.split('/')[-1]} type:").grid(row=0,column=0)
         Label(self,text=f"Output {self.outputname.split('/')[-1]} type:").grid(row=1,column=0)
         if not config or config.returncode != 0:
