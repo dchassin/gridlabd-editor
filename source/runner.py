@@ -117,7 +117,7 @@ class Runner:
         else:
             self.command = command
         try:
-            self.proc = sp.Popen(self.command, stdout=sp.PIPE, stderr=sp.PIPE, text=True)
+            self.proc = sp.Popen(self.command, stdout=sp.PIPE, stderr=sp.PIPE, text=True, encoding='utf-8')
             with ThreadPoolExecutor(2) as self.pool:
                 p1 = self.pool.submit(log_output, self)
                 p2 = self.pool.submit(log_error, self)
@@ -137,10 +137,12 @@ class Runner:
             if any(map(lambda c: issubclass(self.exception[0],c),exceptions)):
                 raise err
 
-    def get_output(self,join=None):
+    def get_output(self,join=None,split=None):
         """Get output
 
             join (None or str)   Specifies whether and how to join output lists 
+
+            split (None or str)  Specifies whether and how to join output strings
 
         The output is collected and delivered in the format requested at __init__.
         """
@@ -149,8 +151,13 @@ class Runner:
                 return join.join(self.output_data).strip()
             else:
                 return self.output_format("\n".join(self.output_data))
+        elif type(self.output_data) is str:
+            if split:
+                return self.output_format(self,output_data).split(split)
+            else:
+                return self.output_format(self.output_data)
         else:
-            return self.output_format(self.output_data)
+            raise RuntimeError("output data type '{type(self.output_data)}' is not valid")
 
     def get_errors(self,join=None):
         """Get errors
