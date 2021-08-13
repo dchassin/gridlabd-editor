@@ -81,6 +81,19 @@ class Weather(Tk):
             messagebox.showerror(f"Weather error",result.stderr)
             return []
 
+    def edit_settings(self,event=None):
+        msg = Tk()
+        msg.title("Remote settings")
+        info = self.command(["config","show"])
+        table = ttk.Treeview(msg,columns=['value'],show='tree')
+        for item in info:
+            spec = item.split("=")
+            if len(spec) > 1:
+                table.insert('',END,text=spec[0],values=[spec[1].replace('"','')])
+        table.column('#0',width=100)
+        table.column('value',width=500,stretch=YES)
+        table.grid(row=0, column=0)
+
 class IndexView(ttk.Treeview):
 
     def __init__(self,main):
@@ -108,37 +121,23 @@ class IndexView(ttk.Treeview):
             self.index[tag] = file
 
     def show_popup(self,event):
+        popup = Menu(self,tearoff=0);
         iid = self.identify_row(event.y)
         if iid:
             self.selection_set(iid)
-            popup = Menu(self,tearoff=0);
             popup.add_command(label="Download",command=self.download_file)
-            popup.add_command(label="Remote settings...",command=self.edit_remote)
-            try:
-                popup.tk_popup(event.x_root,event.y_root,0)
-            finally:
-                popup.grab_release()
+            popup.add_separator()
+        popup.add_command(label="Settings...",command=self.main.edit_settings)
+        try:
+            popup.tk_popup(event.x_root,event.y_root,0)
+        finally:
+            popup.grab_release()
 
     def download_file(self,event=None):
         tag = self.selection()[0]
         if tag in self.index.keys():
             file = self.index[tag]
-            self.main.command(["get",file])
-            self.main.update()
-            self.main.listview.reload()
-
-    def edit_remote(self,event=None):
-        msg = Tk()
-        msg.title("Remote settings")
-        info = self.main.command(["config","show"])
-        table = ttk.Treeview(msg,columns=['value'],show='tree')
-        for item in info:
-            spec = item.split("=")
-            if len(spec) > 1:
-                table.insert('',END,text=spec[0],values=[spec[1].replace('"','')])
-        table.column('#0',width=100)
-        table.column('value',width=500,stretch=YES)
-        table.grid(row=0, column=0)
+            self.main.listview.get_file(file)
 
 class ListView(ttk.Treeview):
 
@@ -149,20 +148,27 @@ class ListView(ttk.Treeview):
         self.bind("<Double-1>",self.show_info)
         self.bind("<Button-2>",self.show_popup)
 
+    def get_file(self,file):
+        self.heading('#0',text="Downloading...")
+        self.main.command(["get",file])
+        self.main.listview.reload()
+
     def show_popup(self,event):
+        popup = Menu(self,tearoff=0);
         iid = self.identify_row(event.y)
         if iid:
             self.selection_set(iid)
-            popup = Menu(self,tearoff=0);
             popup.add_command(label="Show info",command=self.show_info)
             popup.add_command(label="Copy name",command=self.copy_name)
             popup.add_separator()
             popup.add_command(label="Delete",command=self.delete_item)
             popup.add_command(label="Delete all",command=self.delete_all)
-            try:
-                popup.tk_popup(event.x_root,event.y_root,0)
-            finally:
-                popup.grab_release()
+            popup.add_separator()
+        popup.add_command(label="Settings...",command=self.main.edit_settings)
+        try:
+            popup.tk_popup(event.x_root,event.y_root,0)
+        finally:
+            popup.grab_release()
 
     def copy_name(self):
         tag = self.selection()[0]
@@ -173,6 +179,7 @@ class ListView(ttk.Treeview):
             self.update()
 
     def delete_item(self):
+        self.heading('#0',text="Deleting...")
         tag = self.selection()[0]
         file = self.item(tag,'text')
         if file:
@@ -181,7 +188,7 @@ class ListView(ttk.Treeview):
 
     def delete_all(self):
         ans = messagebox.askokcancel("Delete all?","Are you sure you want to delete all weather data?")
-        print("ans =",ans)
+        self.heading('#0',text="Deleting all...")
         if ans == True:
             self.main.command(["delete"])
             self.reload()
