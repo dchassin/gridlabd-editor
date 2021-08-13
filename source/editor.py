@@ -12,7 +12,14 @@ import json
 import subprocess
 import webbrowser
 
+#
+# GridLAB-D Editor modules
+#
 editor_path = os.path.split(__file__)[0]
+sys.path.append(editor_path)
+
+import runner
+import preferences
 
 #
 # Console output
@@ -496,6 +503,9 @@ class Editor(Tk):
             else:
                 outputtype = outputext
             command =  f"gridlabd convert -i {inputname} -o {import_dialog.outputname} -f {inputtype} -t {outputtype}"
+            # result = runner.Runner(command,output_call=self.output,error_call=self.error)
+            # if result.returncode:
+            #     messagebox.showerror("File import failed",f"Return code {result.returncode}\n\n"+result.get_errors('\n'))
             self.output(f"Running {command}...\n")
             result = subprocess.run(command.split(),capture_output=True)
             if result:
