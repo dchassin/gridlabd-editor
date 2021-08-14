@@ -112,7 +112,7 @@ class Weather(Tk):
 
 class Settings(Toplevel):
 
-    settings_edit = {
+    settings = {
         "GITHUB" : {
             "dialog" : lambda title,prompt,value: simpledialog.askstring(title=title,prompt=prompt,initialvalue=value),
             "prompt" : "GitHub repo server"
@@ -168,21 +168,50 @@ class Settings(Toplevel):
         for item in info:
             spec = item.split("=")
             if len(spec) > 1:
-                self.table.insert('',END,text=spec[0],values=[spec[1].replace('"','')])
+                self.table.insert('',END,text=self.settings[spec[0]]['prompt'],values=[spec[1].replace('"','')])
         self.table.update()
         self.config(cursor="")
 
     def on_doubleclick(self,event):
-        tag = self.table.selection()[0]
-        prop = self.table.item(tag,'text')
-        value = self.main.command(["config","get",prop])[0]
-        prompt = self.settings_edit[prop]['prompt']
-        dialog = self.settings_edit[prop]['dialog']
-        edit = dialog("Edit weather setting",prompt,value)
-        if edit and edit != value:
-            self.main.command(["config","set",prop,edit])
-            self.reload()
+        row = self.table.identify_row(event.y)
+        column = self.table.identify_column(event.x)
+        entry = TableEntryPopup(self.table,row,column)
+        entry.wait_window()
+        if entry.data:
+            self.main.command(["config","set",entry.data['text'],entry.data['values'][0]])
             self.changed = True
+
+
+class TableEntryPopup(Entry):
+    def __init__(self,parent,row,column,**kwargs):
+        super().__init__(parent,**kwargs)
+        self.tv = parent
+        self.row = row
+        self.column = int(column[1:])-1
+        self.data = parent.item(row)
+        self.insert(0,self.data['values'][self.column])
+        self['exportselection'] = False
+        self.focus_force()
+        self.bind("<Return>", self.on_return)
+        self.bind("<Control-a>", self.select_all)
+        self.bind("<Escape>", self.on_cancel)
+        x,y,width,height = parent.bbox(row, column)
+        pady = height//2
+        self.place(x=x, y=y+pady, anchor="w", relwidth=1)
+        self.select_all()
+
+    def on_return(self, event):
+        self.data['values'][self.column] = self.get()
+        self.tv.item(self.row, values=self.data['values'])
+        self.destroy()
+
+    def on_cancel(self, event):
+        self.data = None
+        self.destroy()
+
+    def select_all(self, *ignore):
+        self.selection_range(0, 'end')
+        return 'break'
 
 class IndexView(ttk.Treeview):
 
@@ -323,5 +352,5 @@ if __name__ == "__main__":
         photo = ImageTk.PhotoImage(ico)
         root.wm_iconphoto(True, photo)
     except Exception as err:
-        print("EXCEPTION:",err)
+        print(f"ERROR [{__file__}]:",err)
     root.mainloop()
