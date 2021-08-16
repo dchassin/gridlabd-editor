@@ -45,6 +45,15 @@ except Exception as err:
         stderr(f"ERROR: {err}. Did you remember to install tkinter support?",file=sys.stderr)
     quit(-1)
 
+try:
+    from PIL import Image, ImageTk
+except Exception as err:
+    if system == 'Darwin':
+        stderr(f"ERROR: {err}. Did you remember to run 'brew install pillow'?",file=sys.stderr)
+    else:
+        stderr(f"ERROR: {err}. Did you remember to install pillow support?",file=sys.stderr)
+    quit(-1)
+
 def TODO(msg="function not implemented yet",context=None):
     if not context:
         context = sys._getframe(1).f_code.co_name
@@ -164,6 +173,7 @@ if sys.platform == "darwin":
         info = bundle.localizedInfoDictionary() or bundle.infoDictionary()
         if info and info['CFBundleName'] == 'Python':
             info['CFBundleName'] = "GridLAB-D"
+            info['CFBundleExecutable'] = "GridLAB-D"
             info['CFBundleShortVersionString'] = f"{version}"
             info['CFBundleVersion'] = f"{build} {branch}"
             info['NSHumanReadableCopyright'] = gridlabd.copyright().split("\n\n")[1]
@@ -1269,6 +1279,12 @@ class ExportDialog(simpledialog.Dialog):
 #
 if __name__ == "__main__":
     root = Editor()
+    try:
+        ico = Image.open(__file__.replace(".py",".png"))
+        photo = ImageTk.PhotoImage(ico)
+        root.wm_iconphoto(True, photo)
+    except Exception as err:
+        print("EXCEPTION:",err)
     if preferences["Welcome dialog enabled"]["value"]:
         messagebox.showinfo("Welcome",
             f"""{title}\n{version}-{build} ({branch}) {system}\n{__doc__}
