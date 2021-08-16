@@ -9,6 +9,9 @@ from tkinter import *
 from tkinter import Menu, messagebox, filedialog, simpledialog, ttk
 import subprocess
 from PIL import Image, ImageTk
+import pandas
+from edittable import PandasDataFrame
+from tmy3 import TMY3
 
 dialog_width = 600
 dialog_height = 400
@@ -93,6 +96,7 @@ class Weather(Tk):
     def command(self,text):
         subcommand = ["gridlabd","weather"]
         subcommand.extend(text)
+        # print("COMMAND:",subcommand,file=sys.stderr)
         self.config(cursor="wait")
         self.update()
         result = subprocess.run(subcommand,capture_output=True)
@@ -165,10 +169,13 @@ class Settings(Toplevel):
         for item in self.table.get_children():
             self.table.delete(item)
         info = self.main.command(["config","show"])
+        self.index = {}
         for item in info:
             spec = item.split("=")
             if len(spec) > 1:
-                self.table.insert('',END,text=self.settings[spec[0]]['prompt'],values=[spec[1].replace('"','')])
+                prompt = self.settings[spec[0]]['prompt']
+                self.table.insert('',END,text=prompt,values=[spec[1].replace('"','')])
+                self.index[prompt] = spec[0]
         self.table.update()
         self.config(cursor="")
 
@@ -178,7 +185,7 @@ class Settings(Toplevel):
         entry = TableEntryPopup(self.table,row,column)
         entry.wait_window()
         if entry.data:
-            self.main.command(["config","set",entry.data['text'],entry.data['values'][0]])
+            self.main.command(["config","set",self.index[entry.data['text']],entry.data['values'][0]])
             self.changed = True
 
 
@@ -195,6 +202,7 @@ class TableEntryPopup(Entry):
         self.bind("<Return>", self.on_return)
         self.bind("<Control-a>", self.select_all)
         self.bind("<Escape>", self.on_cancel)
+        self.bind("<FocusOut>", self.on_cancel)
         x,y,width,height = parent.bbox(row, column)
         pady = height//2
         self.place(x=x, y=y+pady, anchor="w", relwidth=1)
@@ -272,7 +280,7 @@ class ListView(ttk.Treeview):
     def __init__(self,main,*args,**kwargs):
         ttk.Treeview.__init__(self,*args,**kwargs)
         self.main = main
-        self.bind("<Double-1>",self.show_info)
+        self.bind("<Double-1>",self.view_data)
         self.bind("<Button-2>",self.show_popup)
         self.update()
 
@@ -285,6 +293,7 @@ class ListView(ttk.Treeview):
         iid = self.identify_row(event.y)
         if iid:
             self.selection_set(iid)
+            popup.add_command(label="View data",command=self.view_data)
             popup.add_command(label="Show info",command=self.show_info)
             popup.add_command(label="Copy name",command=self.copy_name)
             popup.add_separator()
@@ -343,6 +352,20 @@ class ListView(ttk.Treeview):
             table.column('#0',width=100)
             table.column('value',width=500)
             table.grid(row=0, column=0)
+
+    def view_data(self,event=None):
+        tag = self.selection()[0]
+        file = self.item(tag,'text')
+        if file:
+            info = self.main.command(["info",file])
+            names = info[0].split(",")
+            values = info[1].split(",")
+            index = names.index('Filepath')
+            filename = values[index].replace('"','')
+            tmy3 = TMY3(filename,coerce_year=2020)
+            table = PandasDataFrame(title=file,data=tmy3.dataframe,parent=self)
+            table.show()
+            table.wait_window()
 
 if __name__ == "__main__":
 
