@@ -181,7 +181,7 @@ class Preferences(simpledialog.Dialog):
 
 import unittest
 
-class PreferencesTest(unittest.TestCase):
+class _unittest(unittest.TestCase):
 
     def test_1_init(self):
         self.assertEqual(Preferences(filename=None).keys(),default_preferences.keys())
