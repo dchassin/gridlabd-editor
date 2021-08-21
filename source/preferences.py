@@ -44,6 +44,12 @@ default_preferences = {
         }
     }
 
+def get(key):
+    return default_preferences[key]['value']
+
+def set(key,value):
+    default_preferences[key]['value'] = value
+
 class Preferences(simpledialog.Dialog):
 
     def __init__(self,filename=default_filename):
