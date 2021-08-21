@@ -91,21 +91,14 @@ class IndexView(ttk.Treeview):
         self.index = {}
 
         self.heading('#0',text="Remote archive")
-        usa = self.insert('',END,text="US")
-        files = self.main.command(["index"])
-        states = []
-        for file in files:
-            state = file[0:2]
-            if not state in states:
-                states.append(state)
-        items = {}
-        for state in states:
-            tag = items[state] = self.insert(usa,END,text=state)
-            self.index[tag] = f"^{state}"
-        for file in files:
-            state = file[0:2]
-            tag = self.insert(items[state],END,text=file[3:].replace("_"," ").split(".")[0])
-            self.index[tag] = file
+        organization = self.main.command(["config","get","ORGANIZATION"])[0].split("/")
+        location = ''
+        for name in organization:
+            location = self.insert(location,END,text=name)
+        libraries = self.main.command(["index"])
+        for library in libraries:
+            tag = self.insert(location,END,text=library)
+            self.index[tag] = library
 
     def show_popup(self,event):
         iid = self.identify_row(event.y)
