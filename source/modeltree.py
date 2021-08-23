@@ -210,12 +210,7 @@ class ModelTree(ttk.Treeview):
         if self.main.model:
             idlist = self.get_selected()
             if len(idlist) == 1:
-                iid = idlist[0]
-                item = self.item_index[iid]
-                itype = item["type"]
-                if itype == "object":
-                    name = self.item.get(iid,'text')
-                    self.main.dataview.show_object(name)
+                self.main.show_modelitem(idlist[0])
 
     def get_selected(self):
         result = []
