@@ -80,6 +80,7 @@ import clipboard
 import menubar
 import modeltree
 import dataview
+import globalview
 import outputview
 import importdialog
 import exportdialog
@@ -231,6 +232,13 @@ class Editor(Tk):
             self.outputview.append_text(text,tag=tag)
         else:
             self.outputview.append_text(f"EXCEPTION: {err}",end=end)
+
+    def show_modelitem(self,iid):
+        item = self.item_index[iid]
+        itype = item["type"]
+        if itype == "object":
+            name = self.item.get(iid,'text')
+            self.main.dataview.show_object(name)
 
     def preferences(self):
         preferences.Preferences().dialog()
