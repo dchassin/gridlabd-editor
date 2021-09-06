@@ -43,9 +43,6 @@ class ModelTree(ttk.Treeview):
         self.load_dict(parent,elements)
         self.main.elements["globals"].update(elements)
 
-    def display(self,otype):
-        print(f"display({otype})")
-
     tags = {
         "clock" : {
             "label" : "Clock",

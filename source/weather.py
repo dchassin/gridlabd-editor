@@ -188,7 +188,6 @@ class Settings(Toplevel):
             self.main.command(["config","set",self.index[entry.data['text']],entry.data['values'][0]])
             self.changed = True
 
-
 class TableEntryPopup(Entry):
     def __init__(self,parent,row,column,**kwargs):
         super().__init__(parent,**kwargs)

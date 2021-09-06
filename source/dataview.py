@@ -120,7 +120,6 @@ class DataView(ttk.Treeview):
             messagebox.showerror(f"Property set error",f"Property {propname} cannot be changed")
             return
         obj = self.main.elements['objects'][objname]["data"]
-        print("classes",self.main.elements["classes"],flush=True)
         oclass = self.main.elements['classes'][obj['class']]
         value = obj[propname]
         ptype = oclass[propname]['type']
@@ -132,14 +131,15 @@ class DataView(ttk.Treeview):
         self.set(propname,"#2",edit)
 
     def on_doubleclick(self,event):
-        item = self.selection()[0]
-        info = self.item(item)['text'].split('/')
-        if not info:
-            return
-        elif info[0] == 'globals':
-            self.edit_global(item,info)
-        elif info[0] == 'objects':
-            self.edit_object(item,info)
+        row = self.identify_row(event.y)
+        if not row in ["class"]:
+            column = self.identify_column(event.x)
+            entry = StringEdit(self,row,column)
+            entry.wait_window()
+            if entry.data:
+                specs = entry.data["text"].split("/")
+                values = entry.data["values"]
+                self.main.elements[specs[0]][specs[1]][specs[2]] = values[1]
 
     def get_selected(self):
         tag = self.selection()[0]
@@ -165,6 +165,39 @@ class AskSetDialog(simpledialog.Dialog):
         Button(text="Save").pack(side=TOP)
         self.grab_set()
         self.wait_window(self)
+
+class StringEdit(Entry):
+    def __init__(self,parent,row,column,**kwargs):
+        super().__init__(parent,**kwargs)
+        self.tv = parent
+        self.row = row
+        self.column = int(column[1:])-1
+        self.data = parent.item(row)
+        self.insert(0,self.data['values'][self.column])
+        self['exportselection'] = False
+        self.focus_force()
+        self.bind("<Return>", self.on_return)
+        self.bind("<Control-a>", self.select_all)
+        self.bind("<Escape>", self.on_cancel)
+        self.bind("<FocusOut>", self.on_cancel)
+        x,y,width,height = parent.bbox(row, column)
+        pady = height//2
+        self.place(x=x, y=y+pady, anchor="w", relwidth=1)
+        self.select_all()
+
+    def on_return(self, event):
+        self.data['values'][self.column] = self.get()
+        self.tv.item(self.row, values=self.data['values'])
+        self.destroy()
+
+    def on_cancel(self, event):
+        self.data = None
+        self.destroy()
+
+    def select_all(self, *ignore):
+        self.selection_range(0, 'end')
+        return 'break'
+
 
 ask_dialogs = {
     "set" : AskSetDialog,
