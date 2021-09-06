@@ -40,7 +40,7 @@ class DataView(ttk.Treeview):
     def show_globals(self):
         self.clear_table()
         self.object = None
-        for name,data in self.main.model['globals'].items():
+        for name,data in self.main.elements['globals'].items():
             if 'description' in data.keys():
                 description = data['description']
             else:
@@ -50,10 +50,21 @@ class DataView(ttk.Treeview):
                 values=[name,data['value'],description])
         self.main.update()
 
+    def edit_global(self,item,info):
+        varname = info[1]
+        var = self.main.elements['globals'][varname]
+        if var['access'] != 'PUBLIC':
+            messagebox.showerror(f"Global set error",f"Global {varname} cannot be changed")
+            return
+        value = var['value']
+        edit = simpledialog.askstring(title=f"Model global",prompt=f"Enter new value for global '{varname}'",initialvalue=value)
+        var['value'] = edit
+        self.set(item,"#2",edit)
+
     def show_class(self,name):
         self.clear_table()
         self.object = name
-        obj = self.main.model['classes'][name]
+        obj = self.main.elements['objects'][name]
         for prop,specs in obj.items():
             if not type(specs) is dict:
                 continue
@@ -80,7 +91,7 @@ class DataView(ttk.Treeview):
         self.clear_table()
         self.object = name
         if data["class"] in self.main.elements["classes"].keys():
-            oclass = self.main.model['classes'][data['class']]
+            oclass = self.main.elements['classes'][data['class']]
         elif "." in data["class"]:
             class_spec = data["class"].split(".")
             module = class_spec[0]
@@ -102,25 +113,15 @@ class DataView(ttk.Treeview):
                 values=[prop.title(),value,description])
         self.main.update()
 
-    def edit_global(self,item,info):
-        varname = info[1]
-        var = self.main.model['globals'][varname]
-        if var['access'] != 'PUBLIC':
-            messagebox.showerror(f"Global set error",f"Global {varname} cannot be changed")
-            return
-        value = var['value']
-        edit = simpledialog.askstring(title=f"Model global",prompt=f"Enter new value for global '{varname}'",initialvalue=value)
-        var['value'] = edit
-        self.set(item,"#2",edit)
-
     def edit_object(self,item,info):
         objname = info[1]
         propname = info[2]
         if propname in ['id','class']:
             messagebox.showerror(f"Property set error",f"Property {propname} cannot be changed")
             return
-        obj = self.main.model['objects'][objname]
-        oclass = self.main.model['classes'][obj['class']]
+        obj = self.main.elements['objects'][objname]["data"]
+        print("classes",self.main.elements["classes"],flush=True)
+        oclass = self.main.elements['classes'][obj['class']]
         value = obj[propname]
         ptype = oclass[propname]['type']
         if ptype in ask_dialogs.keys():

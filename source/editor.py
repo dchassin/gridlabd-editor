@@ -177,6 +177,7 @@ class Editor(Tk):
             "classes":{},
             "modules":{},
             "objects":{},
+            "globals":{},
             }
         # self.viewtype = 'objects' # 'objects','classes','modules','globals','schedules','filters'
         # self.viewstyle = 'name' # 'name'

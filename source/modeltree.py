@@ -13,6 +13,7 @@ except Exception as err:
         stderr(f"ERROR: {err}. Did you remember to install tkinter support?",file=sys.stderr)
     quit(-1)
 
+import utilities
 
 #
 # Editor model tree
@@ -31,6 +32,16 @@ class ModelTree(ttk.Treeview):
     def load_modules(self,parent,elements):
         self.load_dict(parent,elements)
         self.main.elements["modules"].update(elements)
+        for module in elements.keys():
+            self.main.elements["classes"].update(utilities.classes(module))
+
+    def load_objects(self,parent,elements):
+        self.load_dict(parent,elements)
+        self.main.elements["objects"].update(elements)
+
+    def load_globals(self,parent,elements):
+        self.load_dict(parent,elements)
+        self.main.elements["globals"].update(elements)
 
     def display(self,otype):
         print(f"display({otype})")
@@ -50,6 +61,7 @@ class ModelTree(ttk.Treeview):
         },
         "globals" : {
             "label" : "Global variables",
+            "loader" : load_globals,
         },
         "includes" : {
             "label" : "Include files",
@@ -77,7 +89,7 @@ class ModelTree(ttk.Treeview):
         },
         "objects" : {
             "label" : "Objects",
-            "loader" : load_dict,
+            "loader" : load_objects,
         },
         "python" : {
             "label" : "Python code",
