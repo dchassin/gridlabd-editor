@@ -3,7 +3,7 @@
 	"version" : "0.0.0",
 	"data" : [
 		{
-			"type" : "comment",
+			"type" : "comments",
 			"values" : [
 				"Development test file",
 				"Do not use for autotesting"
@@ -18,14 +18,14 @@
 			}
 		},
 		{
-			"type" : "module",
+			"type" : "modules",
 			"values" : {
 				"powerflow" : {},
 				"climate" : {}
 			}
 		},
 		{
-			"type" : "input",
+			"type" : "inputs",
 			"values" : {
 				"table2glm_input.csv" : {
 					"outputfile" : "table2glm_input.glm",
@@ -59,7 +59,7 @@
 			}
 		},
 		{
-			"type" : "include",
+			"type" : "includes",
 			"values" : {
 				"house.glm" : {
 					"NAME" : "House 1"
@@ -67,39 +67,52 @@
 			}
 		},
 		{
-			"type" : "filter",
+			"type" : "filters",
 			"values" : {}
 		},
 		{
-			"type" : "schedule",
+			"type" : "schedules",
 			"values" : {}
 		},
 		{
-			"type" : "class",
+			"type" : "classes",
 			"values" :  {}
 		},
 		{
-			"type" : "template",
+			"type" : "templates",
 			"values" : {}
 		},
 		{
-			"type" : "object",
+			"type" : "objects",
 			"values" : {
 				"config_1" :  {
-					"class" : "powerflow.pole_configuration"
+					"type" : "object",
+					"data" : {
+						"class" : "powerflow.pole_configuration"
+					}
 				},
 				"object_1" : {
-					"class" : "pole",
-					"configuration" : "config_1"
+					"type" : "object",
+					"data" : {
+						"class" : "powerflow.pole",
+						"configuration" : "config_1"
+					}
 				},
 				"object_2" : {
-					"class" : "pole",
-					"configuration" : "config_1"
+					"type" : "object",
+					"data" : {
+						"class" : "powerflow.pole",
+						"configuration" : "config_1"
+					}
 				},
 				"line_1_2" : {
-					"class" : "line",
-					"from" : "object_1",
-					"to" : "object_2"
+					"type" : "object",
+					"data" : {
+						"class" : "powerflow.line",
+						"from" : "object_1",
+						"to" : "object_2",
+						"length" : "1000 ft"
+					}
 				}
 			}
 		},
@@ -111,7 +124,7 @@
 			]
 		},
 		{
-			"type" : "output",
+			"type" : "outputs",
 			"values" : {
 				"example_output.html" : {
 					"show" : true
@@ -119,7 +132,7 @@
 			}
 		},
 		{
-			"type" : "comment",
+			"type" : "comments",
 			"values" : [
 				"End of test file"
 			]

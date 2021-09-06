@@ -88,7 +88,7 @@ import exportdialog
 #
 # GridLAB-D link
 #
-result = subprocess.run(f"{preferences.get('GridLAB-D executable')} --version=install".split(),capture_output=True)
+result = subprocess.run(f"{preferences.Preferences().get('GridLAB-D executable')} --version=install".split(),capture_output=True)
 if not result:
     stderr("ERROR: GridLAB-D is not installed on this system")
     quit(-1)
@@ -154,6 +154,7 @@ class Editor(Tk):
         Tk.__init__(self)
 
         self.configure(background='lightgray')
+        self.preferences = preferences.Preferences()
 
         self.style = ttk.Style(self)
         self.style.configure('gridlabd.Treeview',
@@ -172,6 +173,11 @@ class Editor(Tk):
         self.model = None
         self.modify = None
         self.template = None
+        self.elements = {
+            "classes":{},
+            "modules":{},
+            "objects":{},
+            }
         # self.viewtype = 'objects' # 'objects','classes','modules','globals','schedules','filters'
         # self.viewstyle = 'name' # 'name'
 
@@ -204,15 +210,14 @@ class Editor(Tk):
             self.update()
 
         if sys.platform == "darwin":
-            self.createcommand('::tk::mac::ShowPreferences',self.preferences)
+            self.createcommand('::tk::mac::ShowPreferences',self.preferences.dialog)
             self.createcommand('::tk::mac::standardAboutPanel',self.help_about)
             self.createcommand('::tk::mac::Quit',self.file_exit)
-            self.bind("<Meta_L><,>",self.preferences)
+            self.bind("<Meta_L><,>", self.preferences.dialog)
 
         if application_data['recent_files']:
             self.filename = application_data['recent_files'][0]
             self.load_model()
-
 
     def output(self,msg,end='\n'):
         self.outputview.append_text(msg,end=end)
@@ -234,14 +239,14 @@ class Editor(Tk):
             self.outputview.append_text(f"EXCEPTION: {err}",end=end)
 
     def show_modelitem(self,iid):
-        item = self.item_index[iid]
-        itype = item["type"]
-        if itype == "object":
-            name = self.item.get(iid,'text')
-            self.main.dataview.show_object(name)
-
-    def preferences(self):
-        preferences.Preferences().dialog()
+        item = self.treeview.item_index[iid]
+        # print("item",item,flush=True)
+        if "type" in item.keys():
+            callname = "show_"+item["type"]
+            if hasattr(self.dataview,callname):
+                display = getattr(self.dataview,callname)
+                name = self.treeview.item(iid,'text')
+                display(name,item["data"])
 
     def load_model(self,filename=None):
         if not filename:
@@ -250,15 +255,12 @@ class Editor(Tk):
             return
         try:
             with open(filename,"r") as f: 
-                try:
-                    filedata = json.load(f)
-                except Exception as errmsg:
-                    messagebox.showerror(filename,f"unable to load file ({errmsg})")
-                    return
+                filedata = json.load(f)
             if self.set_model(filedata):
                 self.set_title(filename)
         except Exception as msg:
-            messagebox.showerror(filename,msg)
+            self.exception()
+            # messagebox.showerror(filename,msg)
 
     def set_model(self,filedata):
         if not filedata \
@@ -538,7 +540,7 @@ if __name__ == "__main__":
         root.wm_iconphoto(True, photo)
     except Exception as err:
         print("EXCEPTION:",err)
-    if preferences.get("Welcome dialog enabled"):
+    if preferences.Preferences().get("Welcome dialog enabled"):
         messagebox.showinfo("Welcome",
             f"""{title}\n{version}-{build} ({branch}) {system}\n{__doc__}
             """)

@@ -188,7 +188,7 @@ class Runner:
 
 import unittest
 
-class __PreferencesTest(unittest.TestCase):
+class __RunnerTest(unittest.TestCase):
 
     def output(self,*args):
         self.output_data = args[0]

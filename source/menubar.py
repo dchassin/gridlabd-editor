@@ -1,5 +1,4 @@
 import os, sys, json
-import preferences
 
 #
 # Tkinter module
@@ -69,8 +68,8 @@ class MenuBar(Menu):
         main.bind("<Meta_L><V>",main.copy)
         if sys.platform != "darwin":
             self.edit_menu.add_separator()     
-            self.edit_menu.add_command(label="Preferences", accelerator="Command-,", command=main.preferences)
-            main.bind("<Meta_L><,>",main.preferences)
+            self.edit_menu.add_command(label="Preferences", accelerator="Command-,", command=main.preferences.dialog)
+            main.bind("<Meta_L><,>",main.preferences.dialog)
         self.add_cascade(label="Edit", menu=self.edit_menu) 
 
         # Model menu
@@ -122,7 +121,7 @@ class MenuBar(Menu):
         # main.view_module = BooleanVar()
         # self.view_menu_elements.add_checkbutton(label = "Module", onvalue = True, offvalue = False, variable = main.view_module, command = main.on_view_elements)
         main.view_class = BooleanVar()
-        main.view_class.set(preferences.get("Class display enabled"))
+        main.view_class.set(main.preferences.get("Class display enabled"))
         self.view_menu_elements.add_checkbutton(label="Class", onvalue=True, offvalue=False, variable=main.view_class, command = main.on_view_elements)
         # main.view_group = BooleanVar()
         # self.view_menu_elements.add_checkbutton(label="Group", onvalue=True, offvalue=False, variable=main.view_group, command = main.on_view_elements)

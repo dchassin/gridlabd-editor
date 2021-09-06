@@ -13,6 +13,8 @@ except Exception as err:
         stderr(f"ERROR: {err}. Did you remember to install tkinter support?",file=sys.stderr)
     quit(-1)
 
+import utilities
+
 class DataView(ttk.Treeview):
 
     def __init__(self,main):
@@ -74,19 +76,30 @@ class DataView(ttk.Treeview):
                 values=[prop,value,description])
         self.main.update()
 
-    def show_object(self,name):
+    def show_object(self,name,data):
         self.clear_table()
         self.object = name
-        obj = self.main.model['objects'][name]
-        for prop,value in obj.items():
-            oclass = self.main.model['classes'][obj['class']]
-            if prop in oclass.keys() and 'description' in oclass[prop]:
-                description = oclass[prop]['description']
+        if data["class"] in self.main.elements["classes"].keys():
+            oclass = self.main.model['classes'][data['class']]
+        elif "." in data["class"]:
+            class_spec = data["class"].split(".")
+            module = class_spec[0]
+            oclass = utilities.classes(module)[class_spec[1]]
+        else:
+            oclass = {} # no info on this object's class
+        for prop,value in data.items():
+            if prop in oclass.keys() and 'description' in oclass[prop].keys():
+                info = oclass[prop]
+                description = info['description'][0].upper() + info['description'][1:]
+                description += " (" + ' '.join([info['flags'].lower(),info['access'].lower(),info['type'].lower()])
+                if "unit" in info.keys():
+                    description += " in " + info["unit"]
+                description += ")"
             else:
                 description = ""
             self.insert('',END,prop,
                 text=f"objects/{name}/{prop}",
-                values=[prop,value,description])
+                values=[prop.title(),value,description])
         self.main.update()
 
     def edit_global(self,item,info):

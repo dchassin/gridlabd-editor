@@ -24,47 +24,58 @@ class ModelTree(ttk.Treeview):
             iid = self.insert(parent,END,text=key)
             self.item_index[iid] = values
 
+    def load_classes(self,parent,elements):
+        self.load_dict(parent,elements)
+        self.main.elements["classes"].update(elements)
+
+    def load_modules(self,parent,elements):
+        self.load_dict(parent,elements)
+        self.main.elements["modules"].update(elements)
+
+    def display(self,otype):
+        print(f"display({otype})")
+
     tags = {
         "clock" : {
             "label" : "Clock",
             "single" : True,
         },
-        "input" : {
+        "inputs" : {
             "label" : "Input files",
             "loader" : load_dict,
         },
-        "output" : {
+        "outputs" : {
             "label" : "Output files",
             "loader" : load_dict,
         },
         "globals" : {
             "label" : "Global variables",
         },
-        "include" : {
+        "includes" : {
             "label" : "Include files",
             "loader" : load_dict,
         },
-        "filter" : {
+        "filters" : {
             "label" : "Filters",
             "loader" : load_dict,
         },
-        "schedule" : {
+        "schedules" : {
             "label" : "Schedules",
             "loader" : load_dict,
         },
-        "class" : {
+        "classes" : {
             "label" : "Classes",
-            "loader" : load_dict,
+            "loader" : load_classes,
         },
-        "template" : {
+        "templates" : {
             "label" : "Templates",
             "loader" : load_dict,
         },
-        "module" : {
+        "modules" : {
             "label" : "Modules",
-            "loader" : load_dict,
+            "loader" : load_modules,
         },
-        "object" : {
+        "objects" : {
             "label" : "Objects",
             "loader" : load_dict,
         },
@@ -74,7 +85,7 @@ class ModelTree(ttk.Treeview):
         "python_file" : {
             "label" : "Python file",
         },
-        "comment" : {
+        "comments" : {
             "label" : "Annotation",
         },
         #
@@ -204,11 +215,11 @@ class ModelTree(ttk.Treeview):
         itype = item["type"]
         if "loader" in self.tags[itype]:
             self.tags[itype]["loader"](self,iid,item["values"])
-            self.item_index[iid] = item
+        self.item_index[iid] = item
 
     def on_select(self,event):
         if self.main.model:
-            idlist = self.get_selected()
+            idlist = self.selection()
             if len(idlist) == 1:
                 self.main.show_modelitem(idlist[0])
 
