@@ -348,6 +348,20 @@ class ListView(ttk.Treeview):
             table = ttk.Treeview(msg,columns=['value'],show='tree')
             for spec in list(zip(names,values)):
                 table.insert('',END,text=spec[0],values=[spec[1].replace('"','')])
+            info = list(map(lambda x:x.split(','),self.main.command(["info",file])))
+            spec = dict(zip(info[0],list(map(lambda x:x.replace(chr(34),''),info[1]))))
+            import pandas
+            data = pandas.read_csv(spec['Filepath'],header=1)
+            result = {}
+            result['High temperature'] = f"{int(data['Dry-bulb (C)'].max()*9/5+32+0.5)} degF"
+            result['Low temperature'] = f"{int(data['Dry-bulb (C)'].min()*9/5+32+0.5)} degF"
+            result['High humidity'] = f"{int(data['RHum (%)'].max()+0.5)}%"
+            result['Low humidity'] = f"{int(data['RHum (%)'].min()+0.5)}%"
+            result['High wind'] = f"{int(data['Wspd (m/s)'].max()*2.24+0.5)} mph"
+            result['Solar average'] = f"{int((data['GHI (W/m^2)']+data['DNI (W/m^2)']+data['DHI (W/m^2)']).sum() / (data['ETRN (W/m^2)']+data['ETR (W/m^2)']).sum()*100)}%"
+            result['Max rainfall'] = f"{int(data['Lprecip depth (mm)'].max()/25.4+0.5)} in"
+            for name,value in result.items():
+                table.insert('',END,text=name,values=[value])
             table.column('#0',width=100)
             table.column('value',width=500)
             table.grid(row=0, column=0)
