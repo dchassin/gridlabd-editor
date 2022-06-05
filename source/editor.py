@@ -102,6 +102,7 @@ try:
 except:
     stderr("ERROR: GridLAB-D is not installed for this python environment")
     quit(-1)
+copyright = subprocess.run(f"{preferences.Preferences().get('GridLAB-D executable')} --copyright".split(),capture_output=True).stdout.decode('utf-8')
 
 #
 # Global variables
@@ -202,7 +203,7 @@ class Editor(Tk):
         self.dataview.place(x=self.dataview_layout['x'],y=self.dataview_layout['y'])
 
         self.outputview = outputview.OutputView(self)
-        self.outputview.append_text(f"{title} {version}-{build} ({branch}) {system}\n{__doc__}".replace('\n\n','\n'))
+        self.outputview.append_text(f"{copyright}\n{__doc__}\n\n{title} {version}-{build} ({branch}) {system}\n\n".replace('\n\n','\n'))
         self.outputview.place(x=self.outputview_layout['x'],y=self.outputview_layout['y'])
 
         if len(sys.argv) > 1:
@@ -233,7 +234,9 @@ class Editor(Tk):
         if not err:
             import traceback
             e_type,e_value,e_trace = sys.exc_info()
-            text = f"EXCEPTION [{e_type.__name__}]: {e_value}"
+            e_file = os.path.basename(e_trace.tb_frame.f_code.co_filename)
+            e_line = e_trace.tb_lineno
+            text = f"EXCEPTION [{e_type.__name__}@{e_file}/{e_line}]: {e_value}"
             tag = '\n'.join(traceback.format_exception(e_type,e_value,e_trace))
             self.outputview.append_text(text,tag=tag)
         else:
@@ -543,6 +546,6 @@ if __name__ == "__main__":
         print("EXCEPTION:",err)
     if preferences.Preferences().get("Welcome dialog enabled"):
         messagebox.showinfo("Welcome",
-            f"""{title}\n{version}-{build} ({branch}) {system}\n{__doc__}
+            f"""{title}\n{version}-{build} ({branch}) {system}\n\n{copyright}\n{__doc__}
             """)
     root.mainloop()
