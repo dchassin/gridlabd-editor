@@ -41,7 +41,7 @@ class DataView(ttk.Treeview):
         self.clear_table()
         self.object = None
         for name,data in self.main.elements['globals'].items():
-            if 'description' in data.keys():
+            if 'description' in data:
                 description = data['description']
             else:
                 description = ''
@@ -70,14 +70,14 @@ class DataView(ttk.Treeview):
                 continue
             value = specs["type"]
             options = []
-            if "access" in specs.keys():
+            if "access" in specs:
                 options.append(specs['access'])
-            if "flags" in specs.keys():
+            if "flags" in specs:
                 options.append(specs['flags'])
-            if "default" in specs.keys():
+            if "default" in specs:
                 options.append(f"default \"{specs['default']}\"")
             options = ", ".join(options)
-            if "descriptions" in specs.keys():
+            if "descriptions" in specs:
                 description = specs["description"]
                 description += f" ({options})"
             else:
@@ -90,7 +90,8 @@ class DataView(ttk.Treeview):
     def show_object(self,name,data):
         self.clear_table()
         self.object = name
-        if data["class"] in self.main.elements["classes"].keys():
+        print(f"{self}.show_object({name},{data})",flush=True)
+        if data["class"] in self.main.elements["classes"]:
             oclass = self.main.elements['classes'][data['class']]
         elif "." in data["class"]:
             class_spec = data["class"].split(".")
@@ -99,11 +100,11 @@ class DataView(ttk.Treeview):
         else:
             oclass = {} # no info on this object's class
         for prop,value in data.items():
-            if prop in oclass.keys() and 'description' in oclass[prop].keys():
+            if prop in oclass and 'description' in oclass[prop]:
                 info = oclass[prop]
                 description = info['description'][0].upper() + info['description'][1:]
                 description += " (" + ' '.join([info['flags'].lower(),info['access'].lower(),info['type'].lower()])
-                if "unit" in info.keys():
+                if "unit" in info:
                     description += " in " + info["unit"]
                 description += ")"
             else:
@@ -119,11 +120,11 @@ class DataView(ttk.Treeview):
         if propname in ['id','class']:
             messagebox.showerror(f"Property set error",f"Property {propname} cannot be changed")
             return
-        obj = self.main.elements['objects'][objname]["data"]
+        obj = self.main.elements['objects'][objname]
         oclass = self.main.elements['classes'][obj['class']]
         value = obj[propname]
         ptype = oclass[propname]['type']
-        if ptype in ask_dialogs.keys():
+        if ptype in ask_dialogs:
             edit = ask_dialogs[ptype](title=f"Object {objname}",prompt=f"Enter new value for property '{propname}'",initialvalue=value)
         else:
             edit = simpledialog.askstring(title=f"Object {objname}",prompt=f"Enter new value for property '{propname}'",initialvalue=value)

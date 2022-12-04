@@ -289,7 +289,7 @@ class Editor(Tk):
 
     def set_model(self,filedata):
         if not filedata \
-                or not "application" in filedata.keys() \
+                or not "application" in filedata \
                 or filedata["application"] != "gridlabd-editor":
             messagebox.showerror(filename,f"file does not contain a valid {gridlabd.__title__} data file")
             return False
@@ -440,16 +440,54 @@ class Editor(Tk):
     #
     # Model menu
     #
-    def model_create(self,gldname):
+    def model_compile(self,gldname):
         glmname = os.path.splitext(gldname)[0]+".glm"
         with open(glmname,"w") as fh:
             print(f"// created by gridlabd-editor from {gldname} as {datetime.datetime.now()}",file=fh)
+            for item in self.model:
+                key = item['type']
+                values = item['values']
+                if key == 'comments':
+                    print("\n".join([f"// {x}" for x in values]),file=fh)
+                elif key == 'clock':
+                    block = ''.join([f"\n    {x[0]} \"{x[1]}\";" for x in values.items()]) + '\n'
+                    print(f"clock {{{block}}}",file=fh)
+                elif key == 'modules':
+                    for module, properties in values.items():
+                        if properties:
+                            block = ''.join([f"\n    {x[0]} \"{x[1]}\";" for x in properties.items()]) + '\n'
+                            print(f"module {module} {{{block}}}",file=fh)
+                        else:
+                            print(f"module {module};",file=fh)
+                elif key == "inputs":
+                    for name, args in values.items():
+                        macro = f"#input \"{name}\""
+                        for tag, value in args.items():
+                            macro += f" --{tag} {value}"
+                        macro += ";"
+                        print(macro,file=fh)
+                elif key == "globals":
+                    for name,value in values.items():
+                        print(f"#define {name}={value}",file=fh)
+                elif key == "includes":
+                    for file, args in values.items():
+                        if args:
+                            arglist = [f"{x[0]}={x[1]}" for x in args.items()]
+                            print(f"#include using({','.join(arglist)}) \"{file}\";",file=fh)
+                        else:
+                            print(f"#include \"{file}\";",file=fh)
+                # elif key == "objects":
+                #     for name, 
+                elif values:
+                    print(f"#warning {key} not processed",file=fh)
+                    print("//",json.dumps(values,indent=4).replace("\n","\n// "),file=fh)
+            print("// END",file=fh)
         return glmname
 
     def model_build(self,event=None):
         self.output(f"\nCompiling {os.path.split(self.filename)[1]}...\n")
         tic = timeit.default_timer()
-        command = ["gridlabd","-C",self.model_create(self.filename)]
+        command = ["gridlabd","-W",os.path.dirname(self.filename),"-C",self.model_compile(self.filename)]
         if self.template:
             command.append(self.template)
         command.extend(["-D","show_progress=FALSE"])
@@ -466,7 +504,7 @@ class Editor(Tk):
     def model_run(self,event=None):
         self.output(f"\nStarting {os.path.split(self.filename)[1]}...\n")
         tic = timeit.default_timer()
-        command = ["gridlabd",self.model_create(self.filename)]
+        command = ["gridlabd","-W",os.path.dirname(self.filename),self.model_compile(self.filename)]
         if self.template:
             command.append(self.template)
         command.extend(["-D","show_progress=FALSE"])

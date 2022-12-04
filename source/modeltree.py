@@ -32,12 +32,14 @@ class ModelTree(ttk.Treeview):
     def load_modules(self,parent,elements):
         self.load_dict(parent,elements)
         self.main.elements["modules"].update(elements)
-        for module in elements.keys():
+        for module in elements:
             self.main.elements["classes"].update(utilities.classes(module))
 
     def load_objects(self,parent,elements):
-        self.load_dict(parent,elements)
-        self.main.elements["objects"].update(elements)
+        data = dict(zip(list(elements.keys()),[{"type":"object","data":x} for x in elements.values()]))
+        print(f"{self}.load_objects({parent},{elements}) --> data = {data}",flush=True)
+        self.load_dict(parent,data)
+        self.main.elements["objects"].update(data)
 
     def load_globals(self,parent,elements):
         self.load_dict(parent,elements)
@@ -180,7 +182,7 @@ class ModelTree(ttk.Treeview):
         insert = Menu(self,tearoff=0);
         for item,values in self.tags.items():
             state = None
-            if self.main.model and "single" in values.keys() and values["single"] \
+            if self.main.model and "single" in values and values["single"] \
                     and item in list(map(lambda x: x["type"],self.main.model)):
                 state = DISABLED
             insert.add_command(label=values["label"],command=self.main.insert,state=state)
@@ -210,7 +212,7 @@ class ModelTree(ttk.Treeview):
         self.main.update()
 
     def get_label(self,tag):
-        if tag not in self.tags.keys():
+        if tag not in self.tags:
             raise Exception(f"Model component '{tag}' not recognized")
         return self.tags[tag]["label"]
 

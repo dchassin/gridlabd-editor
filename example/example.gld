@@ -21,16 +21,18 @@
 			"type" : "modules",
 			"values" : {
 				"powerflow" : {},
-				"climate" : {}
+				"climate" : {},
+				"tape" : {
+					"csv_header_type" : "NAME"
+				}
 			}
 		},
 		{
 			"type" : "inputs",
 			"values" : {
-				"table2glm_input.csv" : {
-					"outputfile" : "table2glm_input.glm",
-					"format" : "table",
-					"type" : "object"
+				"config.csv" : {
+					"from" : "config",
+					"type" : "config"
 				},
 				"CA-San_Francisco_Intl_Ap.tmy3" : {}
 			}
@@ -61,8 +63,11 @@
 		{
 			"type" : "includes",
 			"values" : {
-				"house.glm" : {
-					"NAME" : "House 1"
+				"house1.glm" : {
+					"NAME" : "House 1",
+					"PHASE" : "AS"
+				},
+				"house2.glm" : {
 				}
 			}
 		},
@@ -86,33 +91,21 @@
 			"type" : "objects",
 			"values" : {
 				"config_1" :  {
-					"type" : "object",
-					"data" : {
-						"class" : "powerflow.pole_configuration"
-					}
+					"class" : "powerflow.pole_configuration"
 				},
 				"object_1" : {
-					"type" : "object",
-					"data" : {
-						"class" : "powerflow.pole",
-						"configuration" : "config_1"
-					}
+					"class" : "powerflow.pole",
+					"configuration" : "config_1"
 				},
 				"object_2" : {
-					"type" : "object",
-					"data" : {
-						"class" : "powerflow.pole",
-						"configuration" : "config_1"
-					}
+					"class" : "powerflow.pole",
+					"configuration" : "config_1"
 				},
 				"line_1_2" : {
-					"type" : "object",
-					"data" : {
-						"class" : "powerflow.line",
-						"from" : "object_1",
-						"to" : "object_2",
-						"length" : "1000 ft"
-					}
+					"class" : "powerflow.line",
+					"from" : "object_1",
+					"to" : "object_2",
+					"length" : "1000 ft"
 				}
 			}
 		},
