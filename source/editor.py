@@ -4,8 +4,6 @@ Copyright (C) 2021 Regents of the Leland Stanford Junior University
 See https://www.gridlabd.us/ for license, acknowledgments, credits, manuals, documentation, and tutorials.
 """
 
-TRACEBACK=True
-
 #
 # Python modules
 #
@@ -14,6 +12,8 @@ import timeit
 import json
 import subprocess
 import webbrowser
+import datetime
+import re
 
 #
 # Console output
@@ -118,7 +118,7 @@ system = f"{os.uname().sysname} {os.uname().release} ({os.uname().machine})"
 library = gridlabd.__file__
 
 #
-# Last run info
+# Application data
 #
 try:
     with open("gridlabd-appdata.conf","r") as f:
@@ -126,7 +126,13 @@ try:
 except:
     application_data = {
         "recent_files" : [],
+        "traceback" : "/dev/stderr",
 }
+try:
+    TRACEBACK = open(application_data["traceback"],"w")
+except:
+    error(f"unable to open traceback file '{traceback}'")
+    TRACEBACK = None
 
 #
 # Platform specifics
@@ -223,14 +229,18 @@ class Editor(Tk):
             self.filename = application_data['recent_files'][0]
             self.load_model()
 
-    def output(self,msg,end='\n'):
-        self.outputview.append_text(msg,end=end)
+    def output(self,msg,end='\n',noblank=False):
+        # print(f"output = [{msg}] -->","["+(re.sub('[\r\n]+','\n',msg.strip('\n')) if noblank else msg)+"]",file=sys.stderr,flush=True)
+        self.outputview.append_text((re.sub('[\r\n]+','\n',msg.strip('\n')) if noblank else msg),end=end)
 
-    def warning(self,msg,end='\n'):
-        self.outputview.append_text("WARNING: +"+msg,end=end)
+    def warning(self,msg,end='\n',noblank=False):
+        if msg:
+            self.outputview.append_text("WARNING: +"+(re.sub('[\r\n]+','\n',msg.strip('\n')) if noblank else msg),end=end)
 
-    def error(self,msg,end='\n'):
-        self.outputview.append_text("ERROR: "+msg,end=end)
+    def error(self,msg,end='\n',noblank=False):
+        # print(f"error = [{msg}]",file=sys.stderr,flush=True)
+        if msg:
+            self.outputview.append_text("ERROR: "+(re.sub('[\r\n]+','\n',msg.strip('\n')) if noblank else msg),end=end)
 
     def exception(self,backup=0,err=None,end='\n'):
         if not err:
@@ -245,11 +255,12 @@ class Editor(Tk):
             tag = '\n'.join(traceback.format_exception(e_type,e_value,e_trace))
             self.outputview.append_text(text,tag=tag)
             if TRACEBACK:
-                print(f"EXCEPTION [{e_type.__name__}@{e_file}/{e_line}]: {e_value}",file=sys.stderr)
-                traceback.print_tb(e_trace,file=sys.stderr)
+                print(f"EXCEPTION [{e_type.__name__}@{e_file}/{e_line}]: {e_value}",file=TRACEBACK)
+                traceback.print_tb(e_trace,file=TRACEBACK)
+                TRACEBACK.flush()
         else:
             if TRACEBACK:
-                traceback.print_exception(err,file=sys.stderr)
+                traceback.print_exception(err,file=TRACEBACK,flush=True)
             self.outputview.append_text(f"EXCEPTION: {err}",end=end)
 
     def show_modelitem(self,iid):
@@ -384,11 +395,11 @@ class Editor(Tk):
     def file_exit(self,event=None):
 
         # save outputview to output save file
-        if preferences.get("Save output"):
-            with open(preferences.get("Save output filename"),"w") as f:
-                f.write(self.outputview.get(1.0,"end-1c"))
+        if self.preferences.get("Save output"):
+            with open(self.preferences.get("Save output filename"),"w") as f:
+                f.write(self.outputview.text.get(1.0,"end-1c"))
         with open("gridlabd-appdata.conf","w") as f:
-            json.dump(application_data,f)
+            json.dump(application_data,f,indent=4)
         self.destroy()
 
     #
@@ -429,17 +440,40 @@ class Editor(Tk):
     #
     # Model menu
     #
+    def model_create(self,gldname):
+        glmname = os.path.splitext(gldname)[0]+".glm"
+        with open(glmname,"w") as fh:
+            print(f"// created by gridlabd-editor from {gldname} as {datetime.datetime.now()}",file=fh)
+        return glmname
+
     def model_build(self,event=None):
-        self.output(f"\nStarting {os.path.split(self.filename)[1]}...\n")
+        self.output(f"\nCompiling {os.path.split(self.filename)[1]}...\n")
         tic = timeit.default_timer()
-        command = ["gridlabd",self.filename]
+        command = ["gridlabd","-C",self.model_create(self.filename)]
         if self.template:
             command.append(self.template)
         command.extend(["-D","show_progress=FALSE"])
         result = subprocess.run(command,capture_output=True)
         toc = timeit.default_timer()
-        self.output(result.stderr)
-        self.output(result.stdout)
+        self.error(result.stderr.decode('utf-8').strip(),noblank=True)
+        self.output(result.stdout.decode('utf-8').strip(),noblank=True)
+        if result.returncode:
+            self.error(f"\nreturn code {result.returncode}!\n")
+        else:
+            self.output(f"\nBuild done\n")
+        self.output(f"Elapsed time: {toc-tic:.2g} seconds\n")
+
+    def model_run(self,event=None):
+        self.output(f"\nStarting {os.path.split(self.filename)[1]}...\n")
+        tic = timeit.default_timer()
+        command = ["gridlabd",self.model_create(self.filename)]
+        if self.template:
+            command.append(self.template)
+        command.extend(["-D","show_progress=FALSE"])
+        result = subprocess.run(command,capture_output=True)
+        toc = timeit.default_timer()
+        self.error(result.stderr.decode('utf-8').strip(),noblank=True)
+        self.output(result.stdout.decode('utf-8').strip(),noblank=True)
         if result.returncode:
             self.error(f"\nreturn code {result.returncode}!\n")
         else:
@@ -520,7 +554,7 @@ class Editor(Tk):
                 return
             if os.path.exists(folder+"/bin/gridlabd"):
                 folder = None
-        preferences.set("GridLAB-D install",folder)
+        self.preferences.set("GridLAB-D install",folder)
 
     #
     # Help
