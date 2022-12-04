@@ -4,6 +4,8 @@ Copyright (C) 2021 Regents of the Leland Stanford Junior University
 See https://www.gridlabd.us/ for license, acknowledgments, credits, manuals, documentation, and tutorials.
 """
 
+TRACEBACK=True
+
 #
 # Python modules
 #
@@ -65,7 +67,7 @@ class TkErrorCatcher:
         except SystemExit as msg:
             raise
         except Exception as err:
-            root.exception()
+            root.exception(backup=1)
 tk.CallWrapper = TkErrorCatcher
 
 #
@@ -230,22 +232,30 @@ class Editor(Tk):
     def error(self,msg,end='\n'):
         self.outputview.append_text("ERROR: "+msg,end=end)
 
-    def exception(self,err=None,end='\n'):
+    def exception(self,backup=0,err=None,end='\n'):
         if not err:
             import traceback
             e_type,e_value,e_trace = sys.exc_info()
-            e_file = os.path.basename(e_trace.tb_frame.f_code.co_filename)
-            e_line = e_trace.tb_lineno
+            e_origin = e_trace
+            while e_origin.tb_next:
+                e_origin = e_origin.tb_next
+            e_file = os.path.basename(e_origin.tb_frame.f_code.co_filename)
+            e_line = e_origin.tb_lineno
             text = f"EXCEPTION [{e_type.__name__}@{e_file}/{e_line}]: {e_value}"
             tag = '\n'.join(traceback.format_exception(e_type,e_value,e_trace))
             self.outputview.append_text(text,tag=tag)
+            if TRACEBACK:
+                print(f"EXCEPTION [{e_type.__name__}@{e_file}/{e_line}]: {e_value}",file=sys.stderr)
+                traceback.print_tb(e_trace,file=sys.stderr)
         else:
+            if TRACEBACK:
+                traceback.print_exception(err,file=sys.stderr)
             self.outputview.append_text(f"EXCEPTION: {err}",end=end)
 
     def show_modelitem(self,iid):
         item = self.treeview.item_index[iid]
         # print("item",item,flush=True)
-        if "type" in item.keys():
+        if "type" in item and "data" in item:
             callname = "show_"+item["type"]
             if hasattr(self.dataview,callname):
                 display = getattr(self.dataview,callname)
