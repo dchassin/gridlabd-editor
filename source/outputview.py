@@ -56,6 +56,8 @@ class OutputView(Frame):
             self.tags[line]["end"] = f"{line+1}.0+{len(self.tags[line]['text'])}c"
 
     def append_text(self,text,end='\n',tag=None,color="error_msg"):
+        if type(text) is bytes:
+            text = text.decode('utf-8')
         if not tag:
             self.text.insert(END,text+end)
         else:
