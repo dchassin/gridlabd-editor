@@ -79,7 +79,7 @@ class MenuBar(Menu):
 
         self.model_menu.add_separator()     
         
-        self.model_menu.add_command(label="Run", command=main.model_build, accelerator="Command-R",)
+        self.model_menu.add_command(label="Run", command=main.model_run, accelerator="Command-R",)
         main.bind("<Meta_L><r>",main.model_build)
         
         self.model_menu.add_separator()     
