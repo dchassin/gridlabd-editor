@@ -498,12 +498,12 @@ class Editor(Tk):
         command.extend(["-D","show_progress=FALSE"])
         result = subprocess.run(command,capture_output=True)
         toc = timeit.default_timer()
-        self.error(result.stderr.decode('utf-8').strip(),noblank=True)
         self.output(result.stdout.decode('utf-8').strip(),noblank=True)
+        tag = result.stderr.decode('utf-8').strip()
         if result.returncode:
-            self.error(f"\nreturn code {result.returncode}!\n")
+            self.outputview.append_text(f"Compile failed: exit code {result.returncode}",tag=tag)
         else:
-            self.output(f"\nBuild done\n")
+            self.outputview.append_text(f"Build completed ok",tag=tag)
         self.output(f"Elapsed time: {toc-tic:.2g} seconds\n")
 
     def model_run(self,event=None):
@@ -515,12 +515,12 @@ class Editor(Tk):
         command.extend(["-D","show_progress=FALSE"])
         result = subprocess.run(command,capture_output=True)
         toc = timeit.default_timer()
-        self.error(result.stderr.decode('utf-8').strip(),noblank=True)
         self.output(result.stdout.decode('utf-8').strip(),noblank=True)
+        tag = result.stderr.decode('utf-8').strip()
         if result.returncode:
-            self.error(f"\nreturn code {result.returncode}!\n")
+            self.outputview.append_text(f"Run failed: exit code {result.returncode}",tag=tag)
         else:
-            self.output(f"\nSimulation done\n")
+            self.outputview.append_text(f"Run completed ok",tag=tag)
         self.output(f"Elapsed time: {toc-tic:.2g} seconds\n")
 
     def model_clock(self,event=None):
