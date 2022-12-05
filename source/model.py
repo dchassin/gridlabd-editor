@@ -3,10 +3,13 @@
 TODO
 """
 
+class GldModelException(Exception):
+    pass
+
 class GldModelItem:
     """TODO
     """
-    attributes = ["name","iid"]
+    attributes = ["name","type","group","iid"]
     def __init__(self,**kwargs):
         """TODO
         """
@@ -28,17 +31,10 @@ class GldModelItem:
         """TODO
         """
         for key, value in data.items():
-            self.data[key] = str(value)
-
-    def set_name(self,name):
-        """TODO
-        """
-        self.name = name
-
-    def get_name(self):
-        """TODO
-        """
-        return self.name
+            if key in self.attributes:
+                setattr(self,attr,value)
+            else:
+                self.data[key] = str(value)
 
     def as_dict(self):
         """TODO
@@ -62,10 +58,90 @@ class GldModelItem:
         """
         self.data[name] = value
 
+class GldModelModule(GldModelItem):
+    def __init__(self,**kwargs):
+        kwargs["type"] = "module"
+        super().__init__(**kwargs)
+
+GldModelModule(type="module",value="123")
+
+class GldModelClass(GldModelItem):
+    def __init__(self,**kwargs):
+        kwargs["type"] = "class"
+        super().__init__(**kwargs)
+
+class GldModelObject(GldModelItem):
+    def __init__(self,**kwargs):
+        kwargs["type"] = "object"
+        super().__init__(**kwargs)
+
+class GldModelObject(GldModelItem):
+    def __init__(self,**kwargs):
+        kwargs["type"] = "object"
+        super().__init__(**kwargs)
+
+class GldModelClock(GldModelItem):
+    def __init__(self,**kwargs):
+        kwargs["type"] = "clock"
+        super().__init__(**kwargs)
+
+class GldModelInput(GldModelItem):
+    def __init__(self,**kwargs):
+        kwargs["type"] = "input"
+        super().__init__(**kwargs)
+
+class GldModelGlobal(GldModelItem):
+    def __init__(self,**kwargs):
+        kwargs["type"] = "global"
+        super().__init__(**kwargs)
+
+class GldModelInclude(GldModelItem):
+    def __init__(self,**kwargs):
+        kwargs["type"] = "include"
+        super().__init__(**kwargs)
+
+class GldModelOutput(GldModelItem):
+    def __init__(self,**kwargs):
+        kwargs["type"] = "output"
+        super().__init__(**kwargs)
+
+class GldModelFilter(GldModelItem):
+    def __init__(self,**kwargs):
+        kwargs["type"] = "filter"
+        super().__init__(**kwargs)
+
+class GldModelSchedule(GldModelItem):
+    def __init__(self,**kwargs):
+        kwargs["type"] = "schedule"
+        super().__init__(**kwargs)
+
+class GldModelGroup(GldModelItem):
+    def __init__(self,**kwargs):
+        kwargs["type"] = "group"
+        super().__init__(**kwargs)
+
+class GldModelTemplate(GldModelItem):
+    def __init__(self,**kwargs):
+        kwargs["type"] = "template"
+        super().__init__(**kwargs)
+
+class GldModelCode(GldModelItem):
+    def __init__(self,**kwargs):
+        kwargs["type"] = "code"
+        super().__init__(**kwargs)
+
+class GldModelSource(GldModelItem):
+    def __init__(self,**kwargs):
+        super().__init__(**kwargs)
+
+class GldModelComment(GldModelItem):
+    def __init__(self,**kwargs):
+        super().__init__(**kwargs)
+        self.type = "comment"
+
 class GldModel :
     """TODO
     """
-
     def __init__(self,*args,**kwargs):
         """TODO
         """
@@ -74,7 +150,9 @@ class GldModel :
     def add_item(self,item):
         """TODO
         """
-        assert isinstance(item,GldModelItem)
+        if not isinstance(item,GldModelItem):
+            raise GldModelException("item is not a GldModelItem")
+        self.data.append(item)
 
 if __name__ == "__main__":
 
@@ -84,7 +162,7 @@ if __name__ == "__main__":
         def __init__(self,**kwargs):
             """TODO
             """
-            super().__init__(self,**kwargs)
+            super().__init__(**kwargs)
 
     class testGldModelItem(unittest.TestCase):
 
@@ -111,8 +189,57 @@ if __name__ == "__main__":
             model = GldModel()
             try:
                 model.add_item(1)
-                raise Exception("test failed")
-            except AssertionError:
+                raise AssertionError("GldModel failed to detect invalid item")
+            except GldModelException:
                 pass
+
+    class testGldModelModule(unittest.TestCase):
+
+        def test_init_ok(self):
+            # check normal arglist constructor
+            module = GldModelModule(name="test",value="123")
+            self.assertEqual(module.name,"test")
+            self.assertEqual(module["value"],"123")
+
+        def test_init_none(self):
+            # check no-data arglist constructor
+            module = GldModelModule(name="test")
+            self.assertEqual(module.name,"test")
+            self.assertEqual(module["value"],None)
+
+        def test_init_anon_none(self):
+            # check default arglist constructor
+            module = GldModelModule()
+            self.assertEqual(module.name,None)
+            self.assertEqual(module["value"],None)
+            module.set_data({"value":"123"})
+            self.assertEqual(module["value"],"123")
+
+        def test_init_anon(self):
+            # check no-name arglist constructor
+            module = GldModelModule(value="123")
+            self.assertEqual(module.name,None)
+            self.assertEqual(module["value"],"123")
+
+        def test_init_data(self):
+            # check data block constructor
+            data={"name":"test","value":"123"}
+            module = GldModelModule(**data)
+            self.assertEqual(module.name,"test")
+            self.assertEqual(module.get_data(),{"value":"123"})
+            self.assertEqual(module["value"],"123")
+            self.assertEqual(module.as_tuple(),("test",{"value":"123"}))
+            self.assertEqual(module.as_dict(),data)
+
+        def test_set_data(self):
+            # check data set
+            module = GldModelModule(name="test",value="123")
+            module["value"] = "456"
+            self.assertEqual(module["value"],"456")
+
+        def test_set_iid(self):
+            # check iid usage
+            module = GldModelModule(name="test",value="123",iid="I012")
+            self.assertEqual(module.iid,"I012")
 
     unittest.main()
