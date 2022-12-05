@@ -3,18 +3,21 @@
 TODO
 """
 
+import json
+
+ATTRIBUTES = ["name","type","group","iid"]
+
 class GldModelException(Exception):
     pass
 
 class GldModelItem:
     """TODO
     """
-    attributes = ["name","type","group","iid"]
     def __init__(self,**kwargs):
         """TODO
         """
-        for attr in self.attributes:
-            if attr in kwargs:
+        for attr in ATTRIBUTES:
+            if attr in kwargs: 
                 setattr(self,attr,kwargs[attr])
                 del kwargs[attr]
             else:
@@ -22,31 +25,45 @@ class GldModelItem:
         self.data = {}
         self.set_data(kwargs["data"] if "data" in kwargs else kwargs)
 
-    def get_data(self):
+    def get_data(self,without=ATTRIBUTES):
         """TODO
         """
-        return self.data
+        result = {}
+        for attr in ATTRIBUTES:
+            if without == None or not attr in without:
+                result[attr] = getattr(self,attr)
+        result.update(self.data)
+        return result
 
     def set_data(self,data):
         """TODO
         """
         for key, value in data.items():
-            if key in self.attributes:
+            if key in ATTRIBUTES:
                 setattr(self,attr,value)
             else:
                 self.data[key] = str(value)
 
-    def as_dict(self):
+    def dict(self,tagged=True,without=ATTRIBUTES):
         """TODO
         """
-        result = {"name":self.name}
-        result.update(self.data)
-        return result
+        if not self.name:
+            return {}
+        if tagged:
+            return {self.name : self.get_data(without=ATTRIBUTES if not with_attributes else None)}
+        else:
+            return self.get_data(without)
 
-    def as_tuple(self):
+    def tuple(self,without=ATTRIBUTES):
         """TODO
         """
-        return (self.name,self.data)
+        return (self.name,self.get_data(without))
+
+    def json(self,tagged=True,without=ATTRIBUTES):
+        """TODO
+        """
+        data = {}
+        return json.dumps(self.dict(tagged,without))
 
     def __getitem__(self,name):
         """TODO
@@ -228,8 +245,8 @@ if __name__ == "__main__":
             self.assertEqual(module.name,"test")
             self.assertEqual(module.get_data(),{"value":"123"})
             self.assertEqual(module["value"],"123")
-            self.assertEqual(module.as_tuple(),("test",{"value":"123"}))
-            self.assertEqual(module.as_dict(),data)
+            self.assertEqual(module.tuple(),("test",{"value":"123"}))
+            self.assertEqual(module.dict(tagged=False,without=['iid','type','group']),data)
 
         def test_set_data(self):
             # check data set
