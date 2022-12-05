@@ -65,6 +65,9 @@ class GldModelItem:
         data = {}
         return json.dumps(self.dict(tagged,without))
 
+    def glm(self):
+        return None;        
+
     def __getitem__(self,name):
         """TODO
         """
