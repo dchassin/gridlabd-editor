@@ -90,7 +90,7 @@ class DataView(ttk.Treeview):
     def show_object(self,name,data):
         self.clear_table()
         self.object = name
-        print(f"{self}.show_object({name},{data})",flush=True)
+        # print(f"{self}.show_object({name},{data})",flush=True)
         if data["class"] in self.main.elements["classes"]:
             oclass = self.main.elements['classes'][data['class']]
         elif "." in data["class"]:
@@ -128,7 +128,7 @@ class DataView(ttk.Treeview):
             edit = ask_dialogs[ptype](title=f"Object {objname}",prompt=f"Enter new value for property '{propname}'",initialvalue=value)
         else:
             edit = simpledialog.askstring(title=f"Object {objname}",prompt=f"Enter new value for property '{propname}'",initialvalue=value)
-        obj[propname] = edit
+        self.main.elements['objects'][objname][propname] = edit
         self.set(propname,"#2",edit)
 
     def on_doubleclick(self,event):
@@ -140,6 +140,7 @@ class DataView(ttk.Treeview):
             if entry.data:
                 specs = entry.data["text"].split("/")
                 values = entry.data["values"]
+                print(f"{specs} <-- {values[1]}",flush=True)
                 self.main.elements[specs[0]][specs[1]][specs[2]] = values[1]
 
     def get_selected(self):
