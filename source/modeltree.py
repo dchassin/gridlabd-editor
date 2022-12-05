@@ -37,7 +37,7 @@ class ModelTree(ttk.Treeview):
 
     def load_objects(self,parent,elements):
         data = dict(zip(list(elements.keys()),[{"type":"object","data":x} for x in elements.values()]))
-        print(f"{self}.load_objects({parent},{elements}) --> data = {data}",flush=True)
+        # print(f"{self}.load_objects({parent},{elements}) --> data = {data}",flush=True)
         self.load_dict(parent,data)
         self.main.elements["objects"].update(data)
 
