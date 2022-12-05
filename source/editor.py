@@ -291,7 +291,7 @@ class Editor(Tk):
         if not filedata \
                 or not "application" in filedata \
                 or filedata["application"] != "gridlabd-editor":
-            messagebox.showerror(filename,f"file does not contain a valid {gridlabd.__title__} data file")
+            messagebox.showerror(self.filename,f"file does not contain a valid {gridlabd.__title__} data file")
             return False
         self.model = filedata["data"]
         self.treeview.update_model()
@@ -337,34 +337,39 @@ class Editor(Tk):
         inputname = filedialog.askopenfilename()
         if not inputname:
             return
-        import_dialog = importdialog.ImportDialog(self,inputname=inputname)
-        if import_dialog.result == True:
-            self.filename = import_dialog.outputname
-            inputext = os.path.splitext(inputname)[1][1:]
-            outputext = os.path.splitext(import_dialog.outputname)[1][1:]
-            if import_dialog.inputtype: 
-                inputtype = f"{inputext}-{import_dialog.inputtype}"
-            else: 
-                inputtype = inputext
-            if import_dialog.outputtype:
-                outputtype = f"{outputext}-{import_dialog.outputtype}"
-            else:
-                outputtype = outputext
-            command =  f"gridlabd convert -i {inputname} -o {import_dialog.outputname} -f {inputtype} -t {outputtype}"
-            # result = runner.Runner(command,output_call=self.output,error_call=self.error)
-            # if result.returncode:
-            #     messagebox.showerror("File import failed",f"Return code {result.returncode}\n\n"+result.get_errors('\n'))
-            self.output(f"Running {command}...\n")
-            result = subprocess.run(command.split(),capture_output=True)
-            if result:
-                self.output(result.stdout)
-                self.output(result.stderr)
-            else:
-                self.error("command failed")
-            if result and result.returncode == 0:
-                self.load_model()
-            else:
-                messagebox.showerror("File import",result.stderr)
+        with open(inputname,"r") as fh:
+            data = json.load(fh);
+            print(data,file=sys.stderr,flush=True)
+            self.treeview.set_model()
+        return
+        # import_dialog = importdialog.ImportDialog(self,inputname=inputname)
+        # if import_dialog.result == True:
+        #     self.filename = import_dialog.outputname
+        #     inputext = os.path.splitext(inputname)[1][1:]
+        #     outputext = os.path.splitext(import_dialog.outputname)[1][1:]
+        #     if import_dialog.inputtype: 
+        #         inputtype = f"{inputext}-{import_dialog.inputtype}"
+        #     else: 
+        #         inputtype = inputext
+        #     if import_dialog.outputtype:
+        #         outputtype = f"{outputext}-{import_dialog.outputtype}"
+        #     else:
+        #         outputtype = outputext
+        #     command =  f"gridlabd convert -i {inputname} -o {import_dialog.outputname} -f {inputtype} -t {outputtype}"
+        #     # result = runner.Runner(command,output_call=self.output,error_call=self.error)
+        #     # if result.returncode:
+        #     #     messagebox.showerror("File import failed",f"Return code {result.returncode}\n\n"+result.get_errors('\n'))
+        #     self.output(f"Running {command}...\n")
+        #     result = subprocess.run(command.split(),capture_output=True)
+        #     if result:
+        #         self.output(result.stdout)
+        #         self.output(result.stderr)
+        #     else:
+        #         self.error("command failed")
+        #     if result and result.returncode == 0:
+        #         self.load_model()
+        #     else:
+        #         messagebox.showerror("File import",result.stderr)
 
     def file_close(self,event=None):
         TODO()
