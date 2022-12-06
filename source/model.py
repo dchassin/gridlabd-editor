@@ -104,6 +104,14 @@ class GldModelClass(GldModelItem):
         kwargs["type"] = "class"
         super().__init__(**kwargs)
 
+    def glm(self):
+        """TODO
+        """
+        result = [f"class {self.name} {{"]
+        result.extend([f"    {name} \"{value}\";" for name,value in self.data.items()])
+        result.append("}")
+        return "\n".join(result)
+
 class GldModelObject(GldModelItem):
     """TODO
     """
@@ -112,6 +120,14 @@ class GldModelObject(GldModelItem):
         """
         kwargs["type"] = "object"
         super().__init__(**kwargs)
+
+    def glm(self):
+        """TODO
+        """
+        result = [f"object {self.name} {{"]
+        result.extend([f"    {name} \"{value}\";" for name,value in self.data.items()])
+        result.append("}")
+        return "\n".join(result)
 
 class GldModelObject(GldModelItem):
     """TODO
@@ -240,6 +256,17 @@ class GldModel :
             raise GldModelException("item is not a GldModelItem")
         self.data.append(item)
 
+    def del_item(self,item):
+        """TODO
+        """
+        TODO
+
+    def glm(self):
+        result = []
+        for item in self.data:
+            result.append(item.glm())
+        return "\n".join(result)            
+
 if __name__ == "__main__":
 
     import unittest
@@ -332,5 +359,14 @@ if __name__ == "__main__":
             # check glm syntax
             module = GldModelModule(name="test",value="123",iid="I012",group="A")
             self.assertEqual(module.glm(),"module test {\n    value \"123\";\n}")
+
+        def test_model_self(self):
+            # check glm syntax
+            model = GldModel()
+            model.add_item(GldModelModule(name="test1",value="123"))
+            model.add_item(GldModelModule(name="test2",value="456"))
+            import sys
+            # print([{x.name:x.data} for x in model.data],file=sys.stderr)
+            self.assertEqual(model.glm(),"module test1 {\n    value \"123\";\n}\nmodule test2 {\n    value \"456\";\n}")
 
     unittest.main()
