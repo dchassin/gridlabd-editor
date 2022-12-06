@@ -79,83 +79,149 @@ class GldModelItem:
         self.data[name] = value
 
 class GldModelModule(GldModelItem):
+    """TODO
+    """
     def __init__(self,**kwargs):
+        """TODO
+        """
         kwargs["type"] = "module"
         super().__init__(**kwargs)
 
-GldModelModule(type="module",value="123")
+    def glm(self):
+        """TODO
+        """
+        result = [f"module {self.name} {{"]
+        result.extend([f"    {name} \"{value}\";" for name,value in self.data.items()])
+        result.append("}")
+        return "\n".join(result)
 
 class GldModelClass(GldModelItem):
+    """TODO
+    """
     def __init__(self,**kwargs):
+        """TODO
+        """
         kwargs["type"] = "class"
         super().__init__(**kwargs)
 
 class GldModelObject(GldModelItem):
+    """TODO
+    """
     def __init__(self,**kwargs):
+        """TODO
+        """
         kwargs["type"] = "object"
         super().__init__(**kwargs)
 
 class GldModelObject(GldModelItem):
+    """TODO
+    """
     def __init__(self,**kwargs):
+        """TODO
+        """
         kwargs["type"] = "object"
         super().__init__(**kwargs)
 
 class GldModelClock(GldModelItem):
+    """TODO
+    """
     def __init__(self,**kwargs):
+        """TODO
+        """
         kwargs["type"] = "clock"
         super().__init__(**kwargs)
 
 class GldModelInput(GldModelItem):
+    """TODO
+    """
     def __init__(self,**kwargs):
         kwargs["type"] = "input"
         super().__init__(**kwargs)
 
 class GldModelGlobal(GldModelItem):
+    """TODO
+    """
     def __init__(self,**kwargs):
+        """TODO
+        """
         kwargs["type"] = "global"
         super().__init__(**kwargs)
 
 class GldModelInclude(GldModelItem):
+    """TODO
+    """
     def __init__(self,**kwargs):
+        """TODO
+        """
         kwargs["type"] = "include"
         super().__init__(**kwargs)
 
 class GldModelOutput(GldModelItem):
+    """TODO
+    """
     def __init__(self,**kwargs):
+        """TODO
+        """
         kwargs["type"] = "output"
         super().__init__(**kwargs)
 
 class GldModelFilter(GldModelItem):
+    """TODO
+    """
     def __init__(self,**kwargs):
+        """TODO
+        """
         kwargs["type"] = "filter"
         super().__init__(**kwargs)
 
 class GldModelSchedule(GldModelItem):
+    """TODO
+    """
     def __init__(self,**kwargs):
+        """TODO
+        """
         kwargs["type"] = "schedule"
         super().__init__(**kwargs)
 
 class GldModelGroup(GldModelItem):
+    """TODO
+    """
     def __init__(self,**kwargs):
+        """TODO
+        """
         kwargs["type"] = "group"
         super().__init__(**kwargs)
 
 class GldModelTemplate(GldModelItem):
+    """TODO
+    """
     def __init__(self,**kwargs):
+        """TODO
+        """
         kwargs["type"] = "template"
         super().__init__(**kwargs)
 
 class GldModelCode(GldModelItem):
+    """TODO
+    """
     def __init__(self,**kwargs):
+        """TODO
+        """
         kwargs["type"] = "code"
         super().__init__(**kwargs)
 
 class GldModelSource(GldModelItem):
+    """TODO
+    """
     def __init__(self,**kwargs):
         super().__init__(**kwargs)
 
 class GldModelComment(GldModelItem):
+    """TODO
+    """
     def __init__(self,**kwargs):
+        """TODO
+        """
         super().__init__(**kwargs)
         self.type = "comment"
 
@@ -261,5 +327,10 @@ if __name__ == "__main__":
             # check iid usage
             module = GldModelModule(name="test",value="123",iid="I012")
             self.assertEqual(module.iid,"I012")
+
+        def test_module_glm(self):
+            # check glm syntax
+            module = GldModelModule(name="test",value="123",iid="I012",group="A")
+            self.assertEqual(module.glm(),"module test {\n    value \"123\";\n}")
 
     unittest.main()
