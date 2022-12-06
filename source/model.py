@@ -66,7 +66,8 @@ class GldModelItem:
         return json.dumps(self.dict(tagged,without))
 
     def glm(self):
-        return None;        
+        tag = json.dumps(dict(zip(ATTRIBUTES,[getattr(self,attr) for attr in ATTRIBUTES])))
+        return f"""// {tag}\n""";
 
     def __getitem__(self,name):
         """TODO
@@ -93,7 +94,7 @@ class GldModelModule(GldModelItem):
         result = [f"module {self.name} {{"]
         result.extend([f"    {name} \"{value}\";" for name,value in self.data.items()])
         result.append("}")
-        return "\n".join(result)
+        return super().glm() + "\n".join(result)
 
 class GldModelClass(GldModelItem):
     """TODO
@@ -110,7 +111,7 @@ class GldModelClass(GldModelItem):
         result = [f"class {self.name} {{"]
         result.extend([f"    {name} \"{value}\";" for name,value in self.data.items()])
         result.append("}")
-        return "\n".join(result)
+        return super().glm() + "\n".join(result)
 
 class GldModelObject(GldModelItem):
     """TODO
@@ -127,7 +128,7 @@ class GldModelObject(GldModelItem):
         result = [f"object {self.name} {{"]
         result.extend([f"    {name} \"{value}\";" for name,value in self.data.items()])
         result.append("}")
-        return "\n".join(result)
+        return super().glm() + "\n".join(result)
 
 class GldModelObject(GldModelItem):
     """TODO
@@ -265,7 +266,7 @@ class GldModel :
         result = []
         for item in self.data:
             result.append(item.glm())
-        return "\n".join(result)            
+        return "\n".join(result)     
 
 if __name__ == "__main__":
 
