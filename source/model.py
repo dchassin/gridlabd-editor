@@ -113,12 +113,11 @@ class GldModelModule(GldModelItem):
     @staticmethod
     def load(model,data):
         for module in data["modules"]:
-            model.add_item(GldModelModule(name=module))
+            mod = GldModelModule(name=module)
+            model.add_item(mod)
             for name,values in data["globals"].items():
                 if name.startswith(f"{module}::"):
-                    print("GLOBAL:",name,values)
-                    item = GldModelGlobal(name=name.split("::")[1],value=values["value"])
-                    model.add_item(item)
+                    mod.set_data({name.split("::")[1]:values["value"]})
 
 class GldModelClass(GldModelItem):
     """TODO
@@ -187,6 +186,11 @@ class GldModelGlobal(GldModelItem):
         """
         kwargs["itype"] = "global"
         super().__init__(**kwargs)
+
+    def glm(self):
+        """TODO
+        """
+        return super().glm() + f"#set {self.get_data('name')}={self.get_data('value')}"
 
 class GldModelInclude(GldModelItem):
     """TODO
