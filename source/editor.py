@@ -131,7 +131,7 @@ except:
 try:
     TRACEBACK = open(application_data["traceback"],"w")
 except:
-    error(f"unable to open traceback file '{traceback}'")
+    print(f"unable to open traceback file",file=sys.stderr)
     TRACEBACK = None
 
 #
