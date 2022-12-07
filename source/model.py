@@ -3,7 +3,7 @@
 The model module manages GLM models for the GridLAB-D Editor.
 """
 
-import os, sys, subprocess
+import os, sys, subprocess, asyncio
 import json
 import tempfile
 
@@ -12,13 +12,28 @@ ITYPE = "ITYPE"
 IPARENT = "IPARENT"
 ATTRIBUTES = [ITYPE,IPARENT,IID]
 
-class GleModelException(Exception):
+HIDDEN_PROPERTIES = [
+    "class",
+    "id",
+    "rank",
+    "flags",
+    ]
+HIDDEN_GLOBALS = [
+    ]
+
+class GldModelException(Exception):
     pass
 
-class GleModelError(Exception):
+class GldModelError(Exception):
     pass
 
-class GleModelItem:
+################################################################################
+#
+# Model items
+#
+################################################################################
+
+class GldModelItem:
     """Abstract class for model items
     """
     def __init__(self,**kwargs):
@@ -32,14 +47,14 @@ class GleModelItem:
 
         Arguments:
         - key       key of data item to get (None returns all data as dict)
-        - strict    flag to enable GleModelError exception if key not found
+        - strict    flag to enable GldModelError exception if key not found
 
         Returns:
         - str       data value if found, None if not found
 
         Exceptions:
-        - GleModelError: key not found
-        - GleModelException: key is not a string
+        - GldModelError: key not found
+        - GldModelException: key is not a string
         """
         if key == None:
             return self.data
@@ -49,13 +64,12 @@ class GleModelItem:
             elif not strict:
                 return None
             else:
-                raise GleModelError("key '{key}' not found")
+                raise GldModelError("key '{key}' not found")
         else:
-            raise GleModelException("key '{key}' is not a string'")
+            raise GldModelException("key '{key}' is not a string'")
 
     def set_data(self,data):
-        """TODO
-        """
+        """Set model data"""
         self.data.update(dict([(key,value) for key,value in data.items() if key not in ATTRIBUTES]))
         for key in ATTRIBUTES:
             if key in data:
@@ -64,16 +78,31 @@ class GleModelItem:
                 setattr(self,key,None)
 
     def zip(self,attr=False):
+        """Return zip of model data or model attributes
+
+        Arguments:
+        - attr  Flag to choose model data or model attributes
+
+        Returns:
+        zip - model data or model attributes
+        """
         if attr:
             return zip(ATTRIBUTES,[getattr(self,attr) for attr in ATTRIBUTES])
         else:
             return zip(self.data.keys(),self.data.values())
 
     def items(self,attr=False):
+        """Return model data or attributes as items tuples"""
         return self.dict(attr=attr).items()
 
     def dict(self,key=None,attr=False):
-        """TODO
+        """Return model data or attributes as dict
+
+        Arguments:
+        - attr  Flag to choose model data or model attributes
+
+        Returns:
+        dict - model data or model attributes
         """
         if attr:
             if key == None:
@@ -86,44 +115,49 @@ class GleModelItem:
             return {self.data["key"]: dict([(tag,value) for tag,value in self.data if tag != key])}
 
     def list(self,key=None,attr=False):
-        """TODO
+        """Return model data or attributes as list of tuples
+
+        Arguments:
+        - attr  Flag to choose model data or model attributes
+
+        Returns:
+        list - model data or model attributes
         """
-        if attr:
-            if key == None:
-                return 
-        return list(self.data.items())
+        return list(self.items(key,attr))
 
     def json(self,key=None,attr=False):
-        """TODO
+        """Return model data or attributes as json string
+
+        Arguments:
+        - attr  Flag to choose model data or model attributes
+
+        Returns:
+        json - model data or model attributes
         """
         return json.dumps(self.dict(key,attr))
 
     def glm(self):
+        """Return GLM string of model"""
         tag = json.dumps(dict(zip(ATTRIBUTES,[getattr(self,attr) for attr in ATTRIBUTES])))
         return f"""// {tag}\n""";
 
     def __getitem__(self,name):
-        """TODO
-        """
+        """Get a data item"""
         return self.data[name] if name in self.data else None
 
     def __setitem__(self,name,value):
-        """TODO
-        """
+        """Set a data item"""
         self.data[name] = value
 
-class GleModelModule(GleModelItem):
-    """TODO
-    """
+class GldModelModule(GldModelItem):
+    """Model module item"""
     def __init__(self,**kwargs):
-        """TODO
-        """
+        """Construct a module item"""
         kwargs[ITYPE] = "module"
         super().__init__(**kwargs)
 
     def glm(self):
-        """TODO
-        """
+        """Get GLM of module item"""
         result = [f"module {self.get_data('name')} {{"]
         result.extend([f"    {name} \"{value}\";" for name,value in self.items() if name != "name"])
         result.append("}")
@@ -131,14 +165,15 @@ class GleModelModule(GleModelItem):
 
     @staticmethod
     def load(model,data):
+        """Load a module items contained data"""
         for module in data["modules"]:
-            mod = GleModelModule(name=module)
+            mod = GldModelModule(name=module)
             model.add_item(mod)
             for name,values in data["globals"].items():
                 if name.startswith(f"{module}::"):
                     mod.set_data({name.split("::")[1]:values["value"]})
 
-class GleModelClass(GleModelItem):
+class GldModelClass(GldModelItem):
     """TODO
     """
     def __init__(self,**kwargs):
@@ -155,7 +190,7 @@ class GleModelClass(GleModelItem):
         result.append("}")
         return super().glm() + "\n".join(result)
 
-class GleModelObject(GleModelItem):
+class GldModelObject(GldModelItem):
     """TODO
     """
     def __init__(self,**kwargs):
@@ -168,17 +203,17 @@ class GleModelObject(GleModelItem):
         """TODO
         """
         result = [f"object {self.get_data('class')} {{"]
-        result.extend([f"    {name} \"{value}\";" for name, value in self.items() if not name in ["class","id","rank"]])
+        result.extend([f"    {name} \"{value}\";" for name, value in self.items() if not name in HIDDEN_PROPERTIES and value != ""])
         result.append("}")
         return super().glm() + "\n".join(result)
 
     @staticmethod
     def load(model,data):
         for name,spec in data["objects"].items():
-            obj = GleModelObject(name=name,**spec)
+            obj = GldModelObject(name=name,**spec)
             model.add_item(obj)
 
-class GleModelClock(GleModelItem):
+class GldModelClock(GldModelItem):
     """TODO
     """
     def __init__(self,**kwargs):
@@ -187,14 +222,30 @@ class GleModelClock(GleModelItem):
         kwargs[ITYPE] = "clock"
         super().__init__(**kwargs)
 
-class GleModelInput(GleModelItem):
+    def glm(self):
+        """TODO
+        """
+        result = ["clock {"]
+        result.extend([f"    {name} \"{value}\"" for name, value in self.items()])
+        result.append("}")
+        return super().glm() + "\n".join(result)
+
+    def load(model,data):
+        spec = {}
+        for name in ["timezone","starttime","stoptime"]:
+            if name in data["globals"]:
+                spec[name] = data["globals"][name]["value"]
+            else:
+                spec[name] = None
+
+class GldModelInput(GldModelItem):
     """TODO
     """
     def __init__(self,**kwargs):
         kwargs[ITYPE] = "input"
         super().__init__(**kwargs)
 
-class GleModelGlobal(GleModelItem):
+class GldModelGlobal(GldModelItem):
     """TODO
     """
     def __init__(self,**kwargs):
@@ -206,16 +257,25 @@ class GleModelGlobal(GleModelItem):
     def glm(self):
         """TODO
         """
-        return super().glm() + f"#set {self.get_data('name')}={self.get_data('value')}"
+        name = self.get_data('name')
+        value = self.get_data('value')
+        access = self.get_data('access')
+        initial = self.get_data('initial')
+        if name not in HIDDEN_GLOBALS \
+                and access == "PUBLIC" \
+                and value not in [initial,""]:
+            return super().glm() + f"#set {name}={value}"
+        else:
+            return super().glm() + f"// {name}={value} is {access} with initial={initial}"
 
     @staticmethod
     def load(model,data):
         for name,spec in data["globals"].items():
             if not "::" in name:
-                var = GleModelGlobal(name=name,**spec)
+                var = GldModelGlobal(name=name,**spec)
                 model.add_item(var)
 
-class GleModelInclude(GleModelItem):
+class GldModelInclude(GldModelItem):
     """TODO
     """
     def __init__(self,**kwargs):
@@ -224,7 +284,7 @@ class GleModelInclude(GleModelItem):
         kwargs[ITYPE] = "include"
         super().__init__(**kwargs)
 
-class GleModelOutput(GleModelItem):
+class GldModelOutput(GldModelItem):
     """TODO
     """
     def __init__(self,**kwargs):
@@ -233,7 +293,7 @@ class GleModelOutput(GleModelItem):
         kwargs[ITYPE] = "output"
         super().__init__(**kwargs)
 
-class GleModelFilter(GleModelItem):
+class GldModelFilter(GldModelItem):
     """TODO
     """
     def __init__(self,**kwargs):
@@ -242,7 +302,7 @@ class GleModelFilter(GleModelItem):
         kwargs[ITYPE] = "filter"
         super().__init__(**kwargs)
 
-class GleModelSchedule(GleModelItem):
+class GldModelSchedule(GldModelItem):
     """TODO
     """
     def __init__(self,**kwargs):
@@ -251,7 +311,7 @@ class GleModelSchedule(GleModelItem):
         kwargs[ITYPE] = "schedule"
         super().__init__(**kwargs)
 
-class GleModelGroup(GleModelItem):
+class GldModelGroup(GldModelItem):
     """TODO
     """
     def __init__(self,**kwargs):
@@ -260,7 +320,7 @@ class GleModelGroup(GleModelItem):
         kwargs[ITYPE] = "group"
         super().__init__(**kwargs)
 
-class GleModelTemplate(GleModelItem):
+class GldModelTemplate(GldModelItem):
     """TODO
     """
     def __init__(self,**kwargs):
@@ -269,7 +329,7 @@ class GleModelTemplate(GleModelItem):
         kwargs[ITYPE] = "template"
         super().__init__(**kwargs)
 
-class GleModelCode(GleModelItem):
+class GldModelCode(GldModelItem):
     """TODO
     """
     def __init__(self,**kwargs):
@@ -278,13 +338,13 @@ class GleModelCode(GleModelItem):
         kwargs[ITYPE] = "code"
         super().__init__(**kwargs)
 
-class GleModelSource(GleModelItem):
+class GldModelSource(GldModelItem):
     """TODO
     """
     def __init__(self,**kwargs):
         super().__init__(**kwargs)
 
-class GleModelComment(GleModelItem):
+class GldModelComment(GldModelItem):
     """TODO
     """
     def __init__(self,**kwargs):
@@ -293,19 +353,26 @@ class GleModelComment(GleModelItem):
         super().__init__(**kwargs)
         self.type = "comment"
 
-class GleModel :
+################################################################################
+#
+# Models
+#
+################################################################################
+
+class GldModel :
     """TODO
     """
     def __init__(self,*args,**kwargs):
         """TODO
         """
         self.data = []
+        self.result = None
 
     def add_item(self,item):
         """TODO
         """
-        if not isinstance(item,GleModelItem):
-            raise GleModelException("item is not a GleModelItem")
+        if not isinstance(item,GldModelItem):
+            raise GldModelException("item is not a GldModelItem")
         self.data.append(item)
 
     def del_item(self,item):
@@ -321,78 +388,116 @@ class GleModel :
                 data = json.load(glm)
 
             if "application" not in data or data["application"] != "gridlabd":
-                raise GleModelException(f"{filename} does not contain a GridLAB-D model")
+                raise GldModelException(f"{filename} does not contain a GridLAB-D model")
             
             # load items
             for itemtype in globals():
                 itemcls = eval(itemtype)
-                if itemtype not in ["GleModel","GleModelItem"] \
-                        and itemtype.startswith("GleModel") \
+                if itemtype not in ["GldModel","GldModelItem"] \
+                        and itemtype.startswith("GldModel") \
                         and hasattr(itemcls,"load"):
                     itemcls.load(self,data)
 
     def glm(self):
         return "\n".join([item.glm() for item in self.data]) 
 
-    def run(self,workdir=".",saveglm='onerror'):
-        assert saveglm in ['never','always','onerror'], GldModelException(f"saveglm='{saveglm}' is invalid")
+    def run(self,pre_options=[],post_options=[],workdir=".",saveglm='onerror',timeout=60,exception=True):
+        """Run a GridLAB-D simulation
+
+        Compile
+
+        Arguments:
+        - pre_options   list of options to provide before the GLM model is loaded
+        - post-options  list of options to provide after the GLM model is loaded 
+        - workdir       working directory to use 
+        - saveglm       condition under which GLM is saved in result 
+        - timeout       simulation timeout limit in seconds 
+
+        Returns:
+        - subprocess.CompletedProcess on success
+        - subprocess.SubprocessError on failure
+        """
+        self.result = None
+        assert saveglm in ['never','always','onerror'], \
+            GldModelException(f"saveglm='{saveglm}' is invalid")
         with tempfile.NamedTemporaryFile(dir=workdir,suffix=".glm") as tmpname:
             glm = self.glm()
             tmpname.write(glm.encode('utf-8'))
             tmpname.flush()
-            rc = subprocess.run(["gridlabd","-W",workdir,tmpname.name],capture_output=True)
-            self.result = rc
-            self.result.stdout = self.result.stdout.decode('utf-8')
-            self.result.stderr = self.result.stderr.decode('utf-8')
-            if saveglm == 'always' or ( rc.returncode != 0 and saveglm == 'error' ):
-                self.result.glm = glm
-            return rc
-        return None
-    
+            command = ["gridlabd","-W",workdir]
+            command.extend(pre_options)
+            command.append(tmpname.name)
+            command.extend(post_options)
+            try:
+                self.result = subprocess.run(command,
+                    capture_output = True,
+                    timeout = timeout if timeout else None)
+                self.result.stdout = self.result.stdout.decode('utf-8')
+                self.result.stderr = self.result.stderr.decode('utf-8')
+            except Exception as err:
+                if exception:
+                    raise
+                self.result = err
+                self.result.returncode = -1
+                self.result.stdout = ""
+                e_type, e_value, e_trace = sys.exc_info()
+                self.result.stderr = f"EXCEPTION: {e_type.__name__} {e_value}"
+            if saveglm == 'always' or ( self.result.returncode != 0 and saveglm == 'error' ):
+                setattr(self.result,"glm",glm)
+            else:
+                setattr(self.result,"glm",None)
+        return self.result
+
+################################################################################
+#
+# Unit tests
+#
+################################################################################
+
 if __name__ == "__main__":
 
     import unittest
 
-    class TestItemClass(GleModelItem):
+    class TestItemClass(GldModelItem):
         def __init__(self,**kwargs):
             """TODO
             """
             super().__init__(**kwargs)
 
-    class testGleModelItem(unittest.TestCase):
+    class testGldModelItem(unittest.TestCase):
 
         def test_class(self):
             # check class valid instance
-            self.assertTrue(isinstance(TestItemClass(),GleModelItem))
+            self.assertTrue(isinstance(TestItemClass(),GldModelItem))
 
         def test_class(self):
             # check class IID capture
             item = TestItemClass(name="test",IID="I123",value="456")
             self.assertEqual(item.IID,"I123")
 
-    class testGleModel(unittest.TestCase):
+    class testGldModel(unittest.TestCase):
 
         def test_add_item_ok(self):
             # check valid add_item()
-            model = GleModel()
-            class TestClass(GleModelItem):
+            model = GldModel()
+            class TestClass(GldModelItem):
                 pass
             model.add_item(TestClass())
 
         def test_add_item_badtype(self):    
             # check invalid add_item()
-            model = GleModel()
+            model = GldModel()
             try:
                 model.add_item(1)
-                raise AssertionError("GleModel failed to detect invalid item")
-            except GleModelException:
+                raise AssertionError("GldModel failed to detect invalid item")
+            except GldModelException:
                 pass
 
-    class testGleModelModule(unittest.TestCase):
+    class testGldModelModule(unittest.TestCase):
 
         def test_init_ok(self):
             # check normal arglist constructor
-            module = GleModelModule(name="test",value="123")
+            module = GldModelModule(name="test",value="123")
             self.assertEqual(module.ITYPE,"module")
             self.assertEqual(module.IPARENT,None)
             self.assertEqual(module.IID,None)
@@ -410,14 +515,14 @@ if __name__ == "__main__":
 
         def test_init_none(self):
             # check no-data arglist constructor
-            module = GleModelModule(name="test")
+            module = GldModelModule(name="test")
             self.assertEqual(module.get_data("name"),"test")
             self.assertEqual(module["value"],None)
 
         def test_init_data(self):
             # check data block constructor
             data={"name":"test","value":"123"}
-            module = GleModelModule(**data)
+            module = GldModelModule(**data)
             self.assertEqual(module.get_data(),{'name': 'test', 'value': '123'})
             self.assertEqual(module.get_data("name"),"test")
             self.assertEqual(module.get_data("value"),"123")
@@ -432,27 +537,27 @@ if __name__ == "__main__":
 
         def test_set_data(self):
             # check data set
-            module = GleModelModule(name="test",value="123")
+            module = GldModelModule(name="test",value="123")
             module["value"] = "456"
             self.assertEqual(module["value"],"456")
 
         def test_set_iid(self):
             # check IID usage
-            module = GleModelModule(name="test",value="123",IID="I012")
+            module = GldModelModule(name="test",value="123",IID="I012")
             self.assertEqual(module.IID,"I012")
             self.assertEqual(module.IPARENT,None)
 
         def test_set_iparent(self):
             # check iparent usage
-            module = GleModelModule(name="test",value="123",IPARENT="I012")
+            module = GldModelModule(name="test",value="123",IPARENT="I012")
             self.assertEqual(module.IID,None)
             self.assertEqual(module.IPARENT,"I012")
 
         def test_model_glm(self):
             # check glm syntax
-            model = GleModel()
-            model.add_item(GleModelModule(name="test1",value="123"))
-            model.add_item(GleModelModule(name="test2",value="456"))
+            model = GldModel()
+            model.add_item(GldModelModule(name="test1",value="123"))
+            model.add_item(GldModelModule(name="test2",value="456"))
             self.assertEqual(model.glm(),
                 '// {"ITYPE": "module", "IPARENT": null, "IID": null}\n' + 
                 'module test1 {\n    value "123";\n}\n' + 
@@ -460,7 +565,7 @@ if __name__ == "__main__":
                 'module test2 {\n    value "456";\n}')
 
         def test_model_run(self):
-            model = GleModel()
+            model = GldModel()
             model.load("unittest/valid_glm.json")
             result = model.run(saveglm='always')
             with open("unittest/test.glm","w") as fh:
@@ -471,12 +576,19 @@ if __name__ == "__main__":
                 fh.write(result.stderr)
             self.assertEqual(result.returncode,0)
 
-        def test_model_load_bad(self):
-            model = GleModel()
+        def test_model_run_timeout(self):
+            model = GldModel()
+            model.load("unittest/valid_glm.json")
+            result = model.run(saveglm='never',timeout=0.1,exception=False)
+            self.assertEqual(result.returncode,-1)
+            self.assertTrue(result.stderr.startswith("EXCEPTION: TimeoutExpired"))
+
+        def test_model_load_error(self):
+            model = GldModel()
             try:
                 model.load("unittest/invalid_glm.json")
-                raise AssertionError("GleModel.load() failed to detect an invalid file")
-            except GleModelException:
+                raise AssertionError("GldModel.load() failed to detect an invalid file")
+            except GldModelException:
                 pass
 
     unittest.main()
