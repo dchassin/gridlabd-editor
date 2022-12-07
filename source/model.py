@@ -70,7 +70,8 @@ class GldModelItem:
 
     def set_data(self,data):
         """Set model data"""
-        self.data.update(dict([(key,value) for key,value in data.items() if key not in ATTRIBUTES]))
+        self.data.update(dict([(key,value) \
+            for key,value in data.items() if key not in ATTRIBUTES]))
         for key in ATTRIBUTES:
             if key in data:
                 setattr(self,key,data[key])
@@ -87,7 +88,8 @@ class GldModelItem:
         zip - model data or model attributes
         """
         if attr:
-            return zip(ATTRIBUTES,[getattr(self,attr) for attr in ATTRIBUTES])
+            return zip(ATTRIBUTES,[getattr(self,attr) \
+                for attr in ATTRIBUTES])
         else:
             return zip(self.data.keys(),self.data.values())
 
@@ -112,9 +114,10 @@ class GldModelItem:
         elif key == None:
             return self.data
         else:
-            return {self.data["key"]: dict([(tag,value) for tag,value in self.data if tag != key])}
+            return {self.data["key"]: dict([(tag,value) \
+                for tag,value in self.data if tag != key])}
 
-    def list(self,key=None,attr=False):
+    def list(self,attr=False):
         """Return model data or attributes as list of tuples
 
         Arguments:
@@ -123,7 +126,7 @@ class GldModelItem:
         Returns:
         list - model data or model attributes
         """
-        return list(self.items(key,attr))
+        return list(self.items(attr))
 
     def json(self,key=None,attr=False):
         """Return model data or attributes as json string
@@ -138,7 +141,8 @@ class GldModelItem:
 
     def glm(self):
         """Return GLM string of model"""
-        tag = json.dumps(dict(zip(ATTRIBUTES,[getattr(self,attr) for attr in ATTRIBUTES])))
+        tag = json.dumps(dict(zip(ATTRIBUTES,[getattr(self,attr) \
+            for attr in ATTRIBUTES])))
         return f"""// {tag}\n""";
 
     def __getitem__(self,name):
@@ -159,7 +163,8 @@ class GldModelModule(GldModelItem):
     def glm(self):
         """Get GLM of module item"""
         result = [f"module {self.get_data('name')} {{"]
-        result.extend([f"    {name} \"{value}\";" for name,value in self.items() if name != "name"])
+        result.extend([f"    {name} \"{value}\";" \
+            for name,value in self.items() if name != "name"])
         result.append("}")
         return super().glm() + "\n".join(result)
 
@@ -186,7 +191,8 @@ class GldModelClass(GldModelItem):
         """TODO
         """
         result = [f"class {self.get_data('name')} {{"]
-        result.extend([f"    {name} \"{value}\";" for name,value in self.items() if name != "name"])
+        result.extend([f"    {name} \"{value}\";" \
+            for name,value in self.items() if name != "name"])
         result.append("}")
         return super().glm() + "\n".join(result)
 
@@ -203,7 +209,9 @@ class GldModelObject(GldModelItem):
         """TODO
         """
         result = [f"object {self.get_data('class')} {{"]
-        result.extend([f"    {name} \"{value}\";" for name, value in self.items() if not name in HIDDEN_PROPERTIES and value != ""])
+        result.extend([f"    {name} \"{value}\";" \
+            for name, value in self.items() \
+            if not name in HIDDEN_PROPERTIES and value != ""])
         result.append("}")
         return super().glm() + "\n".join(result)
 
@@ -226,7 +234,8 @@ class GldModelClock(GldModelItem):
         """TODO
         """
         result = ["clock {"]
-        result.extend([f"    {name} \"{value}\"" for name, value in self.items()])
+        result.extend([f"    {name} \"{value}\"" \
+            for name, value in self.items()])
         result.append("}")
         return super().glm() + "\n".join(result)
 
@@ -266,7 +275,8 @@ class GldModelGlobal(GldModelItem):
                 and value not in [initial,""]:
             return super().glm() + f"#set {name}={value}"
         else:
-            return super().glm() + f"// {name}={value} is {access} with initial={initial}"
+            return super().glm() + \
+                f"// {name}={value} is {access} with initial={initial}"
 
     @staticmethod
     def load(model,data):
@@ -360,37 +370,73 @@ class GldModelComment(GldModelItem):
 ################################################################################
 
 class GldModel :
-    """TODO
-    """
+    """GridLAB-D editor model implementation class"""
     def __init__(self,*args,**kwargs):
-        """TODO
-        """
-        self.data = []
+        """Construct a new model"""
+        self.data = {}
+        self.index = []
         self.result = None
 
-    def add_item(self,item):
-        """TODO
+    @staticmethod
+    def guid():
+        """Generate a unique id for an item"""
+        import random
+        return random.randint(0,2**64-1)
+
+    def add_item(self,item,at=-1):
+        """Add an item to model
+
+        Arguments:
+        - item  item to add (must be derived from GldModelItem)
+        - at    optional location in index at which to add item (-1 for tail)
+
+        Returns:
+        - guid  locator key for the item
         """
         if not isinstance(item,GldModelItem):
             raise GldModelException("item is not a GldModelItem")
-        self.data.append(item)
+        guid = self.guid()
+        self.data[guid] = item
+        self.index.insert(at if at >= 0 else len(self.index)-at+1,guid)
+        return guid
 
-    def del_item(self,item):
-        """TODO
-        """
-        TODO
+    def del_item(self,guid):
+        """Delete an item from the model using the locator key"""
+        self.index.remove(guid)
+        del self.data[guid]
+
+    def keys(self):
+        """Model iterator for key guids"""
+        for key in self.index:
+            yield key
+
+    def values(self):
+        """Model iterator for values"""
+        for key in self.index:
+            yield self.data[key]
+
+    def items(self):
+        """Model iterator for model key,value pairs"""
+        for key in self.index:
+            yield key, self.data[key]
 
     def load(self,filename):
-        with open(filename,"r") as glm:
-            if filename.endswith(".glm"):
-                TODO("convert GLM to JSON")
-            else:          
-                data = json.load(glm)
+        """Load a model from a GridLAB-D JSON file"""
 
+        # convert GLM to JSON
+        if filename.endswith(".glm"):
+            glmname = filename
+            filename = filename[:-4] + ".json"
+            os.system(f"gridlabd -C {glmname} -o {filename}")
+
+        with open(filename,"r") as glm:
+            data = json.load(glm)
+
+            # check if this is a valid JSON file
             if "application" not in data or data["application"] != "gridlabd":
-                raise GldModelException(f"{filename} does not contain a GridLAB-D model")
+                raise GldModelException(f"{filename} is not a GridLAB-D model")
             
-            # load items
+            # load items by scanning through classes derived from GldModelItem
             for itemtype in globals():
                 itemcls = eval(itemtype)
                 if itemtype not in ["GldModel","GldModelItem"] \
@@ -399,19 +445,21 @@ class GldModel :
                     itemcls.load(self,data)
 
     def glm(self):
-        return "\n".join([item.glm() for item in self.data]) 
+        """Compile a GLM file from the model"""
+        return "\n".join([self.data[guid].glm() for guid in self.index]) 
 
-    def run(self,pre_options=[],post_options=[],workdir=".",saveglm='onerror',timeout=60,exception=True):
+    def run(self,pre_options=[],post_options=[],workdir=".",
+            saveglm='onerror',timeout=60,exception=True):
         """Run a GridLAB-D simulation
 
         Compile
 
         Arguments:
-        - pre_options   list of options to provide before the GLM model is loaded
-        - post-options  list of options to provide after the GLM model is loaded 
-        - workdir       working directory to use 
-        - saveglm       condition under which GLM is saved in result 
-        - timeout       simulation timeout limit in seconds 
+        - pre_options  list of options to provide before the GLM model is loaded
+        - post-options list of options to provide after the GLM model is loaded 
+        - workdir      working directory to use 
+        - saveglm      condition under which GLM is saved in result 
+        - timeout      simulation timeout limit in seconds 
 
         Returns:
         - subprocess.CompletedProcess on success
@@ -442,7 +490,8 @@ class GldModel :
                 self.result.stdout = ""
                 e_type, e_value, e_trace = sys.exc_info()
                 self.result.stderr = f"EXCEPTION: {e_type.__name__} {e_value}"
-            if saveglm == 'always' or ( self.result.returncode != 0 and saveglm == 'error' ):
+            if saveglm == 'always' \
+                    or ( self.result.returncode != 0 and saveglm == 'error' ):
                 setattr(self.result,"glm",glm)
             else:
                 setattr(self.result,"glm",None)
@@ -579,16 +628,33 @@ if __name__ == "__main__":
         def test_model_run_timeout(self):
             model = GldModel()
             model.load("unittest/valid_glm.json")
-            result = model.run(saveglm='never',timeout=0.1,exception=False)
-            self.assertEqual(result.returncode,-1)
-            self.assertTrue(result.stderr.startswith("EXCEPTION: TimeoutExpired"))
+            r = model.run(saveglm='never',timeout=0.1,exception=False)
+            self.assertEqual(r.returncode,-1)
+            self.assertTrue(r.stderr.startswith("EXCEPTION: TimeoutExpired"))
 
         def test_model_load_error(self):
             model = GldModel()
             try:
                 model.load("unittest/invalid_glm.json")
-                raise AssertionError("GldModel.load() failed to detect an invalid file")
+                raise AssertionError("GldModel.load() did not fail")
             except GldModelException:
                 pass
+
+        def test_iterators(self):
+            model = GldModel()
+            model.load("unittest/valid_glm.json")
+            for num,key in enumerate(model.keys()):
+                self.assertEqual(key,model.index[num])
+            for num,value in enumerate(model.values()):
+                self.assertEqual(value,model.data[model.index[num]])
+            for num,item in enumerate(model.items()):
+                key,value = item
+                self.assertEqual(key,model.index[num])
+                self.assertEqual(value,model.data[key])
+
+        def test_load_glm(self):
+            model = GldModel()
+            model.load("unittest/IEEE-13.glm")
+            self.assertEqual(len(list(model.keys())),201)
 
     unittest.main()

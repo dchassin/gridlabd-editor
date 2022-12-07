@@ -8,6 +8,8 @@ See https://www.gridlabd.us/ for license, acknowledgments, credits, manuals, doc
 # Python modules
 #
 import sys, os
+system = f"{os.uname().sysname} {os.uname().release} ({os.uname().machine})"
+
 import timeit
 import json
 import subprocess
@@ -34,9 +36,9 @@ try:
     from tkinter import Menu, messagebox, filedialog, simpledialog, ttk
 except Exception as err:
     if system == 'Darwin':
-        stderr(f"ERROR: {err}. Did you remember to run 'brew install python-tk'?",file=sys.stderr)
+        stderr(f"ERROR: {err}. Did you forget run 'brew install python-tk'?",file=sys.stderr)
     else:
-        stderr(f"ERROR: {err}. Did you remember to install tkinter support?",file=sys.stderr)
+        stderr(f"ERROR: {err}. Did you forget to install tkinter support?",file=sys.stderr)
     quit(-1)
 
 try:
@@ -114,7 +116,6 @@ version = gridlabd.__version__.split('-')[0]
 build = gridlabd.version()["build"]
 branch = gridlabd.version()["branch"] 
 python = f"{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro} ({sys.version_info.releaselevel})"
-system = f"{os.uname().sysname} {os.uname().release} ({os.uname().machine})"
 library = gridlabd.__file__
 
 #
@@ -633,6 +634,6 @@ if __name__ == "__main__":
         print("EXCEPTION:",err)
     if preferences.Preferences().get("Welcome dialog enabled"):
         messagebox.showinfo("Welcome",
-            f"""{title}\n{version}-{build} ({branch}) {system}\n\n{copyright}\n{__doc__}
+            f"""{title}\n{version}-{build}\n({branch})\n{system}\n\n{__doc__}
             """)
     root.mainloop()
