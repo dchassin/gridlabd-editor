@@ -1,69 +1,83 @@
 """GridLAB-D Editor Model
 
-TODO
+The model module manages GLM models for the GridLAB-D Editor.
 """
 
 import json
 
-ATTRIBUTES = ["name","type","group","iid"]
+ATTRIBUTES = ["itype","iparent","iid"]
 
 class GldModelException(Exception):
     pass
 
 class GldModelItem:
-    """TODO
+    """Abstract class for model items
     """
     def __init__(self,**kwargs):
         """TODO
         """
-        for attr in ATTRIBUTES:
-            if attr in kwargs: 
-                setattr(self,attr,kwargs[attr])
-                del kwargs[attr]
-            else:
-                setattr(self,attr,None)
         self.data = {}
-        self.set_data(kwargs["data"] if "data" in kwargs else kwargs)
+        self.set_data(kwargs)
 
-    def get_data(self,without=ATTRIBUTES):
-        """TODO
+    def get_data(self,key=None,strict=False):
+        """get model item data
         """
-        result = {}
-        for attr in ATTRIBUTES:
-            if without == None or not attr in without:
-                result[attr] = getattr(self,attr)
-        result.update(self.data)
-        return result
+        if key == None:
+            return self.data
+        elif type(key) is str:
+            if key in self.data:
+                return self.data[key]
+            elif not strict:
+                return None
+            else:
+                raise GldModelException("key '{key}' not found")
+        else:
+            raise GldModelException("data key must be a string")
 
     def set_data(self,data):
         """TODO
         """
-        for key, value in data.items():
-            if key in ATTRIBUTES:
-                setattr(self,attr,value)
+        self.data.update(dict([(key,value) for key,value in data.items() if key not in ATTRIBUTES]))
+        for key in ATTRIBUTES:
+            if key in data:
+                setattr(self,key,data[key])
             else:
-                self.data[key] = str(value)
+                setattr(self,key,None)
 
-    def dict(self,tagged=True,without=ATTRIBUTES):
-        """TODO
-        """
-        if not self.name:
-            return {}
-        if tagged:
-            return {self.name : self.get_data(without=ATTRIBUTES if not with_attributes else None)}
+    def zip(self,attr=False):
+        if attr:
+            return zip(ATTRIBUTES,[getattr(self,attr) for attr in ATTRIBUTES])
         else:
-            return self.get_data(without)
+            return zip(self.data.keys(),self.data.values())
 
-    def tuple(self,without=ATTRIBUTES):
+    def items(self,attr=False):
+        return self.dict(attr=attr).items()
+
+    def dict(self,key=None,attr=False):
         """TODO
         """
-        return (self.name,self.get_data(without))
+        if attr:
+            if key == None:
+                return dict(self.zip(True))
+            else:
+                return getattr(self,key)
+        elif key == None:
+            return self.data
+        else:
+            return {self.data["key"]: dict([(tag,value) for tag,value in self.data if tag != key])}
 
-    def json(self,tagged=True,without=ATTRIBUTES):
+    def list(self,key=None,attr=False):
         """TODO
         """
-        data = {}
-        return json.dumps(self.dict(tagged,without))
+        if attr:
+            if key == None:
+                return 
+        return list(self.data.items())
+
+    def json(self,key=None,attr=False):
+        """TODO
+        """
+        return json.dumps(self.dict(key,attr))
 
     def glm(self):
         tag = json.dumps(dict(zip(ATTRIBUTES,[getattr(self,attr) for attr in ATTRIBUTES])))
@@ -85,16 +99,26 @@ class GldModelModule(GldModelItem):
     def __init__(self,**kwargs):
         """TODO
         """
-        kwargs["type"] = "module"
+        kwargs["itype"] = "module"
         super().__init__(**kwargs)
 
     def glm(self):
         """TODO
         """
-        result = [f"module {self.name} {{"]
-        result.extend([f"    {name} \"{value}\";" for name,value in self.data.items()])
+        result = [f"module {self.get_data('name')} {{"]
+        result.extend([f"    {name} \"{value}\";" for name,value in self.items() if name != "name"])
         result.append("}")
         return super().glm() + "\n".join(result)
+
+    @staticmethod
+    def load(model,data):
+        for module in data["modules"]:
+            model.add_item(GldModelModule(name=module))
+            for name,values in data["globals"].items():
+                if name.startswith(f"{module}::"):
+                    print("GLOBAL:",name,values)
+                    item = GldModelGlobal(name=name.split("::")[1],value=values["value"])
+                    model.add_item(item)
 
 class GldModelClass(GldModelItem):
     """TODO
@@ -102,14 +126,14 @@ class GldModelClass(GldModelItem):
     def __init__(self,**kwargs):
         """TODO
         """
-        kwargs["type"] = "class"
+        kwargs["itype"] = "class"
         super().__init__(**kwargs)
 
     def glm(self):
         """TODO
         """
-        result = [f"class {self.name} {{"]
-        result.extend([f"    {name} \"{value}\";" for name,value in self.data.items()])
+        result = [f"class {self.get_data('name')} {{"]
+        result.extend([f"    {name} \"{value}\";" for name,value in self.items() if name != "name"])
         result.append("}")
         return super().glm() + "\n".join(result)
 
@@ -119,14 +143,14 @@ class GldModelObject(GldModelItem):
     def __init__(self,**kwargs):
         """TODO
         """
-        kwargs["type"] = "object"
+        kwargs["itype"] = "object"
         super().__init__(**kwargs)
 
     def glm(self):
         """TODO
         """
-        result = [f"object {self.name} {{"]
-        result.extend([f"    {name} \"{value}\";" for name,value in self.data.items()])
+        result = [f"object {self.get_data('name')} {{"]
+        result.extend([f"    {name} \"{value}\";" for name, value in self.items() if name != "name"])
         result.append("}")
         return super().glm() + "\n".join(result)
 
@@ -136,7 +160,7 @@ class GldModelObject(GldModelItem):
     def __init__(self,**kwargs):
         """TODO
         """
-        kwargs["type"] = "object"
+        kwargs["itype"] = "object"
         super().__init__(**kwargs)
 
 class GldModelClock(GldModelItem):
@@ -145,14 +169,14 @@ class GldModelClock(GldModelItem):
     def __init__(self,**kwargs):
         """TODO
         """
-        kwargs["type"] = "clock"
+        kwargs["itype"] = "clock"
         super().__init__(**kwargs)
 
 class GldModelInput(GldModelItem):
     """TODO
     """
     def __init__(self,**kwargs):
-        kwargs["type"] = "input"
+        kwargs["itype"] = "input"
         super().__init__(**kwargs)
 
 class GldModelGlobal(GldModelItem):
@@ -161,7 +185,7 @@ class GldModelGlobal(GldModelItem):
     def __init__(self,**kwargs):
         """TODO
         """
-        kwargs["type"] = "global"
+        kwargs["itype"] = "global"
         super().__init__(**kwargs)
 
 class GldModelInclude(GldModelItem):
@@ -170,7 +194,7 @@ class GldModelInclude(GldModelItem):
     def __init__(self,**kwargs):
         """TODO
         """
-        kwargs["type"] = "include"
+        kwargs["itype"] = "include"
         super().__init__(**kwargs)
 
 class GldModelOutput(GldModelItem):
@@ -179,7 +203,7 @@ class GldModelOutput(GldModelItem):
     def __init__(self,**kwargs):
         """TODO
         """
-        kwargs["type"] = "output"
+        kwargs["itype"] = "output"
         super().__init__(**kwargs)
 
 class GldModelFilter(GldModelItem):
@@ -188,7 +212,7 @@ class GldModelFilter(GldModelItem):
     def __init__(self,**kwargs):
         """TODO
         """
-        kwargs["type"] = "filter"
+        kwargs["itype"] = "filter"
         super().__init__(**kwargs)
 
 class GldModelSchedule(GldModelItem):
@@ -197,7 +221,7 @@ class GldModelSchedule(GldModelItem):
     def __init__(self,**kwargs):
         """TODO
         """
-        kwargs["type"] = "schedule"
+        kwargs["itype"] = "schedule"
         super().__init__(**kwargs)
 
 class GldModelGroup(GldModelItem):
@@ -206,7 +230,7 @@ class GldModelGroup(GldModelItem):
     def __init__(self,**kwargs):
         """TODO
         """
-        kwargs["type"] = "group"
+        kwargs["itype"] = "group"
         super().__init__(**kwargs)
 
 class GldModelTemplate(GldModelItem):
@@ -215,7 +239,7 @@ class GldModelTemplate(GldModelItem):
     def __init__(self,**kwargs):
         """TODO
         """
-        kwargs["type"] = "template"
+        kwargs["itype"] = "template"
         super().__init__(**kwargs)
 
 class GldModelCode(GldModelItem):
@@ -224,7 +248,7 @@ class GldModelCode(GldModelItem):
     def __init__(self,**kwargs):
         """TODO
         """
-        kwargs["type"] = "code"
+        kwargs["itype"] = "code"
         super().__init__(**kwargs)
 
 class GldModelSource(GldModelItem):
@@ -262,11 +286,24 @@ class GldModel :
         """
         TODO
 
+    def load(self,filename):
+        with open(filename,"r") as glm:
+            if filename.endswith(".glm"):
+                TODO("convert GLM to JSON")
+            else:          
+                data = json.load(glm)
+
+            assert data["application"] == "gridlabd", GldModelException(f"{filename} does not contain a GridLAB-D model")
+            
+            # load modules
+            for itemtype in globals():
+                itemcls = eval(itemtype)
+                if itemtype not in ["GldModel","GldModelItem"] and itemtype.startswith("GldModel") and hasattr(itemcls,"load"):
+                    itemcls.load(self,data)
+        print(self.glm()) # TODO delete this
+
     def glm(self):
-        result = []
-        for item in self.data:
-            result.append(item.glm())
-        return "\n".join(result)     
+        return "\n".join([item.glm() for item in self.data])     
 
 if __name__ == "__main__":
 
@@ -312,38 +349,40 @@ if __name__ == "__main__":
         def test_init_ok(self):
             # check normal arglist constructor
             module = GldModelModule(name="test",value="123")
-            self.assertEqual(module.name,"test")
+            self.assertEqual(module.itype,"module")
+            self.assertEqual(module.iparent,None)
+            self.assertEqual(module.iid,None)
+            self.assertEqual(module.get_data(),{'name': 'test', 'value': '123'})
+            self.assertEqual(module.get_data("name"),"test")
+            self.assertEqual(module.get_data("value"),"123")
+            self.assertEqual(module["name"],"test")
             self.assertEqual(module["value"],"123")
+            self.assertEqual(module.dict(),{'name': 'test', 'value': '123'})
+            self.assertEqual(module.list(),[('name', 'test'), ('value', '123')])
+            self.assertEqual(module.json(),'{"name": "test", "value": "123"}')
+            self.assertEqual(module.glm(),'// {"itype": "module", "iparent": null, "iid": null}\n' + 
+                'module test {\n    value "123";\n}')
 
         def test_init_none(self):
             # check no-data arglist constructor
             module = GldModelModule(name="test")
-            self.assertEqual(module.name,"test")
+            self.assertEqual(module.get_data("name"),"test")
             self.assertEqual(module["value"],None)
-
-        def test_init_anon_none(self):
-            # check default arglist constructor
-            module = GldModelModule()
-            self.assertEqual(module.name,None)
-            self.assertEqual(module["value"],None)
-            module.set_data({"value":"123"})
-            self.assertEqual(module["value"],"123")
-
-        def test_init_anon(self):
-            # check no-name arglist constructor
-            module = GldModelModule(value="123")
-            self.assertEqual(module.name,None)
-            self.assertEqual(module["value"],"123")
 
         def test_init_data(self):
             # check data block constructor
             data={"name":"test","value":"123"}
             module = GldModelModule(**data)
-            self.assertEqual(module.name,"test")
-            self.assertEqual(module.get_data(),{"value":"123"})
+            self.assertEqual(module.get_data(),{'name': 'test', 'value': '123'})
+            self.assertEqual(module.get_data("name"),"test")
+            self.assertEqual(module.get_data("value"),"123")
+            self.assertEqual(module["name"],"test")
             self.assertEqual(module["value"],"123")
-            self.assertEqual(module.tuple(),("test",{"value":"123"}))
-            self.assertEqual(module.dict(tagged=False,without=['iid','type','group']),data)
+            self.assertEqual(module.dict(),{'name': 'test', 'value': '123'})
+            self.assertEqual(module.list(),[('name', 'test'), ('value', '123')])
+            self.assertEqual(module.json(),'{"name": "test", "value": "123"}')
+            self.assertEqual(module.glm(),'// {"itype": "module", "iparent": null, "iid": null}\n' + 
+                'module test {\n    value "123";\n}')
 
         def test_set_data(self):
             # check data set
@@ -355,19 +394,26 @@ if __name__ == "__main__":
             # check iid usage
             module = GldModelModule(name="test",value="123",iid="I012")
             self.assertEqual(module.iid,"I012")
+            self.assertEqual(module.iparent,None)
 
-        def test_module_glm(self):
-            # check glm syntax
-            module = GldModelModule(name="test",value="123",iid="I012",group="A")
-            self.assertEqual(module.glm(),"module test {\n    value \"123\";\n}")
+        def test_set_iparent(self):
+            # check iid usage
+            module = GldModelModule(name="test",value="123",iparent="I012")
+            self.assertEqual(module.iid,None)
+            self.assertEqual(module.iparent,"I012")
 
-        def test_model_self(self):
+        def test_model_glm(self):
             # check glm syntax
             model = GldModel()
             model.add_item(GldModelModule(name="test1",value="123"))
             model.add_item(GldModelModule(name="test2",value="456"))
-            import sys
-            # print([{x.name:x.data} for x in model.data],file=sys.stderr)
-            self.assertEqual(model.glm(),"module test1 {\n    value \"123\";\n}\nmodule test2 {\n    value \"456\";\n}")
+            self.assertEqual(model.glm(),'// {"itype": "module", "iparent": null, "iid": null}\n' + 
+                'module test1 {\n    value "123";\n}\n' + 
+                '// {"itype": "module", "iparent": null, "iid": null}\n' + 
+                'module test2 {\n    value "456";\n}')
+
+        def test_model_load(self):
+            model = GldModel()
+            model.load("../example/network.json")
 
     unittest.main()
