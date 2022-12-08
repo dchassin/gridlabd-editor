@@ -1,7 +1,5 @@
 {	"application": "gridlabd",
 	"version" : "4.3.1",
-	"branch": "develop_fix_json_save",
-	"build": "221207",
 	"modules" : {
 		"powerflow" : {
 			"major" : "4",
@@ -8100,187 +8098,156 @@
 	"globals" : {
 		"version.major" : {
 			"type" : "int32",
-			"initial" : "4",
 			"access" : "REFERENCE",
 			"value" : "4"
 		},
 		"version.minor" : {
 			"type" : "int32",
-			"initial" : "3",
 			"access" : "REFERENCE",
 			"value" : "3"
 		},
 		"version.patch" : {
 			"type" : "int32",
-			"initial" : "1",
 			"access" : "REFERENCE",
 			"value" : "1"
 		},
 		"version.build" : {
 			"type" : "int32",
-			"initial" : "221207",
 			"access" : "REFERENCE",
-			"value" : "221207"
+			"value" : "221203"
 		},
 		"version.branch" : {
 			"type" : "char256",
-			"initial" : "develop_fix_json_save",
 			"access" : "REFERENCE",
-			"value" : "develop_fix_json_save"
+			"value" : "develop"
 		},
 		"version" : {
 			"type" : "char1024",
-			"initial" : "4.3.1-221207-develop_fix_json_save",
 			"access" : "REFERENCE",
-			"value" : "4.3.1-221207-develop_fix_json_save"
+			"value" : "4.3.1-221203-develop"
 		},
 		"command_line" : {
 			"type" : "char1024",
-			"initial" : "\"/usr/local/opt/gridlabd/4.3.1-221207-develop_fix_json_save/bin/gridlabd.bin -C unittest/IEEE-13.glm -o unittest/IEEE-13.json\"",
 			"access" : "REFERENCE",
-			"value" : "/usr/local/opt/gridlabd/4.3.1-221207-develop_fix_json_save/bin/gridlabd.bin -C unittest/IEEE-13.glm -o unittest/IEEE-13.json"
+			"value" : "/usr/local/opt/gridlabd/4.3.1-221203-develop/bin/gridlabd.bin -C unittest/IEEE-13.glm -o unittest/IEEE-13.json"
 		},
 		"environment" : {
 			"type" : "char1024",
-			"initial" : "batch",
 			"access" : "PUBLIC",
 			"value" : "batch"
 		},
 		"quiet" : {
 			"type" : "bool",
-			"initial" : "FALSE",
 			"access" : "PUBLIC",
 			"value" : "FALSE"
 		},
 		"warn" : {
 			"type" : "bool",
-			"initial" : "TRUE",
 			"access" : "PUBLIC",
 			"value" : "TRUE"
 		},
 		"debugger" : {
 			"type" : "bool",
-			"initial" : "FALSE",
 			"access" : "PUBLIC",
 			"value" : "FALSE"
 		},
 		"gdb" : {
 			"type" : "bool",
-			"initial" : "FALSE",
 			"access" : "PUBLIC",
 			"value" : "FALSE"
 		},
 		"debug" : {
 			"type" : "bool",
-			"initial" : "FALSE",
 			"access" : "PUBLIC",
 			"value" : "FALSE"
 		},
 		"test" : {
 			"type" : "bool",
-			"initial" : "FALSE",
 			"access" : "PUBLIC",
 			"value" : "FALSE"
 		},
 		"verbose" : {
 			"type" : "bool",
-			"initial" : "FALSE",
 			"access" : "PUBLIC",
 			"value" : "FALSE"
 		},
 		"iteration_limit" : {
 			"type" : "int32",
-			"initial" : "100",
 			"access" : "PUBLIC",
 			"value" : "100"
 		},
 		"workdir" : {
 			"type" : "char1024",
-			"initial" : "/Users/dchassin/Documents/github/dchassin/gridlabd-editor/source",
 			"access" : "REFERENCE",
-			"value" : "/Users/dchassin/Documents/github/dchassin/gridlabd-editor/source"
+			"value" : "/Users/david/Documents/GitHub/dchassin/gridlabd-editor/source"
 		},
 		"dumpfile" : {
 			"type" : "char1024",
-			"initial" : "gridlabd.json",
 			"access" : "PUBLIC",
 			"value" : "gridlabd.json"
 		},
 		"savefile" : {
 			"type" : "char1024",
-			"initial" : "\"\"",
 			"access" : "PUBLIC",
 			"value" : "unittest/IEEE-13.json"
 		},
 		"dumpall" : {
 			"type" : "bool",
-			"initial" : "FALSE",
 			"access" : "PUBLIC",
 			"value" : "FALSE"
 		},
 		"runchecks" : {
 			"type" : "bool",
-			"initial" : "FALSE",
 			"access" : "PUBLIC",
 			"value" : "FALSE"
 		},
 		"threadcount" : {
 			"type" : "int32",
-			"initial" : "1",
 			"access" : "PUBLIC",
 			"value" : "1"
 		},
 		"profiler" : {
 			"type" : "bool",
-			"initial" : "FALSE",
 			"access" : "PUBLIC",
 			"value" : "FALSE"
 		},
 		"pauseatexit" : {
 			"type" : "bool",
-			"initial" : "FALSE",
 			"access" : "PUBLIC",
 			"value" : "FALSE"
 		},
 		"testoutputfile" : {
 			"type" : "char1024",
-			"initial" : "test.txt",
 			"access" : "PUBLIC",
 			"value" : "test.txt"
 		},
 		"xml_encoding" : {
 			"type" : "int32",
-			"initial" : "8",
 			"access" : "PUBLIC",
 			"value" : "8"
 		},
 		"clock" : {
 			"type" : "timestamp",
-			"initial" : "1999-12-31 16:00:00 PST",
 			"access" : "PUBLIC",
 			"value" : "1999-12-31 16:00:00 PST"
 		},
 		"starttime" : {
 			"type" : "timestamp",
-			"initial" : "1999-12-31 16:00:00 PST",
 			"access" : "PUBLIC",
 			"value" : "1999-12-31 16:00:00 PST"
 		},
 		"stoptime" : {
 			"type" : "timestamp",
-			"initial" : "NEVER",
 			"access" : "PUBLIC",
 			"value" : "NEVER"
 		},
 		"double_format" : {
 			"type" : "char32",
-			"initial" : "%+lg",
 			"access" : "PUBLIC",
 			"value" : "%+lg"
 		},
 		"complex_format" : {
 			"type" : "char256",
-			"initial" : "%+lg%+lg%c",
 			"access" : "PUBLIC",
 			"value" : "%+lg%+lg%c"
 		},
@@ -8292,121 +8259,101 @@
 				"POLAR_DEG" : "0x2",
 				"POLAR_RAD" : "0x3"
 			},
-			"initial" : "0",
 			"access" : "PUBLIC",
 			"value" : "DEFAULT"
 		},
 		"object_format" : {
 			"type" : "char32",
-			"initial" : "%s:%d",
 			"access" : "PUBLIC",
 			"value" : "%s:%d"
 		},
 		"object_scan" : {
 			"type" : "char32",
-			"initial" : "%[^:]:%d",
 			"access" : "PUBLIC",
 			"value" : "%[^:]:%d"
 		},
 		"object_tree_balance" : {
 			"type" : "bool",
-			"initial" : "FALSE",
 			"access" : "PUBLIC",
 			"value" : "FALSE"
 		},
 		"kmlfile" : {
 			"type" : "char1024",
-			"initial" : "\"\"",
 			"access" : "PUBLIC",
 			"value" : ""
 		},
 		"kmlhost" : {
 			"type" : "char1024",
-			"initial" : "https://code.gridlabd.us/develop_fix_json_save/runtime",
 			"access" : "PUBLIC",
-			"value" : "https://code.gridlabd.us/develop_fix_json_save/runtime"
+			"value" : "https://code.gridlabd.us/develop/runtime"
 		},
 		"modelname" : {
 			"type" : "char1024",
-			"initial" : "\"\"",
 			"access" : "REFERENCE",
 			"value" : "unittest/IEEE-13.glm"
 		},
 		"execdir" : {
 			"type" : "char1024",
-			"initial" : "/usr/local/opt/gridlabd/4.3.1-221207-develop_fix_json_save/bin",
 			"access" : "REFERENCE",
-			"value" : "/usr/local/opt/gridlabd/4.3.1-221207-develop_fix_json_save/bin"
+			"value" : "/usr/local/opt/gridlabd/4.3.1-221203-develop/bin"
 		},
 		"strictnames" : {
 			"type" : "bool",
-			"initial" : "TRUE",
 			"access" : "PUBLIC",
 			"value" : "TRUE"
 		},
 		"website" : {
 			"type" : "char1024",
-			"initial" : "http://www.gridlabd.org/",
 			"access" : "PUBLIC",
 			"value" : "http://www.gridlabd.org/"
 		},
 		"urlbase" : {
 			"type" : "char1024",
-			"initial" : "http://www.gridlabd.org/",
 			"access" : "PUBLIC",
 			"value" : "http://www.gridlabd.org/"
 		},
 		"randomstate" : {
 			"type" : "int32",
-			"initial" : "0",
 			"access" : "PUBLIC",
-			"value" : "-320981152"
+			"value" : "-1011977603"
 		},
 		"randomseed" : {
 			"type" : "int32",
-			"initial" : "0",
 			"access" : "PUBLIC",
-			"value" : "-320981152"
+			"value" : "-1011977603"
 		},
 		"include" : {
 			"type" : "char1024",
-			"initial" : "\"\"",
 			"access" : "REFERENCE",
 			"value" : ""
 		},
 		"trace" : {
 			"type" : "char1024",
-			"initial" : "\"\"",
 			"access" : "PUBLIC",
 			"value" : ""
 		},
 		"gdb_window" : {
 			"type" : "bool",
-			"initial" : "FALSE",
 			"access" : "PUBLIC",
 			"value" : "FALSE"
 		},
 		"tmp" : {
 			"type" : "char1024",
-			"initial" : "/Users/dchassin/.gridlabd/tmp",
 			"access" : "PUBLIC",
-			"value" : "/Users/dchassin/.gridlabd/tmp"
+			"value" : "/Users/david/.gridlabd/tmp"
 		},
 		"force_compile" : {
 			"type" : "int32",
-			"initial" : "0",
 			"access" : "PUBLIC",
 			"value" : "0"
 		},
 		"nolocks" : {
 			"type" : "bool",
-			"initial" : "FALSE",
 			"access" : "PUBLIC",
 			"value" : "FALSE"
 		},
 		"skipsafe" : {
 			"type" : "bool",
-			"initial" : "FALSE",
 			"access" : "PUBLIC",
 			"value" : "FALSE"
 		},
@@ -8418,7 +8365,6 @@
 				"EURO" : "0x2",
 				"ISO8601" : "0x3"
 			},
-			"initial" : "0",
 			"access" : "PUBLIC",
 			"value" : "ISO"
 		},
@@ -8430,103 +8376,86 @@
 				"BOTTOMUP" : "0x2",
 				"TOPDOWN" : "0x3"
 			},
-			"initial" : "1",
 			"access" : "PUBLIC",
 			"value" : "DEFERRED"
 		},
 		"minimum_timestep" : {
 			"type" : "int32",
-			"initial" : "1",
 			"access" : "PUBLIC",
 			"value" : "1"
 		},
 		"platform" : {
 			"type" : "char8",
-			"initial" : "MACOSX",
 			"access" : "REFERENCE",
 			"value" : "MACOSX"
 		},
 		"suppress_repeat_messages" : {
 			"type" : "bool",
-			"initial" : "TRUE",
 			"access" : "PUBLIC",
 			"value" : "TRUE"
 		},
 		"maximum_synctime" : {
 			"type" : "int32",
-			"initial" : "60",
 			"access" : "PUBLIC",
 			"value" : "60"
 		},
 		"run_realtime" : {
 			"type" : "bool",
-			"initial" : "FALSE",
 			"access" : "PUBLIC",
 			"value" : "FALSE"
 		},
 		"enter_realtime" : {
 			"type" : "timestamp",
-			"initial" : "NEVER",
 			"access" : "PUBLIC",
 			"value" : "NEVER"
 		},
 		"realtime_metric" : {
 			"type" : "double",
-			"initial" : "+0",
 			"access" : "REFERENCE",
 			"value" : "+0"
 		},
 		"no_deprecate" : {
 			"type" : "bool",
-			"initial" : "FALSE",
 			"access" : "PUBLIC",
 			"value" : "FALSE"
 		},
 		"streaming_io" : {
 			"type" : "bool",
-			"initial" : "FALSE",
 			"access" : "PROTECTED",
 			"value" : "FALSE"
 		},
 		"compileonly" : {
 			"type" : "bool",
-			"initial" : "FALSE",
 			"access" : "PROTECTED",
 			"value" : "TRUE"
 		},
 		"relax_naming_rules" : {
 			"type" : "bool",
-			"initial" : "FALSE",
 			"access" : "PUBLIC",
 			"value" : "TRUE"
 		},
 		"browser" : {
 			"type" : "char1024",
-			"initial" : "safari",
 			"access" : "PUBLIC",
 			"value" : "safari"
 		},
 		"server_portnum" : {
 			"type" : "int32",
-			"initial" : "0",
 			"access" : "PUBLIC",
 			"value" : "0"
 		},
 		"server_quit_on_close" : {
 			"type" : "bool",
-			"initial" : "FALSE",
 			"access" : "PUBLIC",
 			"value" : "FALSE"
 		},
 		"client_allowed" : {
 			"type" : "char1024",
-			"initial" : "\"\"",
 			"access" : "PUBLIC",
 			"value" : ""
 		},
 		"autoclean" : {
 			"type" : "bool",
-			"initial" : "TRUE",
 			"access" : "PUBLIC",
 			"value" : "TRUE"
 		},
@@ -8544,13 +8473,11 @@
 				"PROVEN" : "0x9",
 				"UNKNOWN" : "0x0"
 			},
-			"initial" : "0",
 			"access" : "PUBLIC",
 			"value" : "UNKNOWN"
 		},
 		"show_progress" : {
 			"type" : "bool",
-			"initial" : "TRUE",
 			"access" : "PUBLIC",
 			"value" : "TRUE"
 		},
@@ -8561,37 +8488,31 @@
 				"WALL" : "0x1",
 				"SIM" : "0x2"
 			},
-			"initial" : "0",
 			"access" : "PUBLIC",
 			"value" : "NONE"
 		},
 		"checkpoint_file" : {
 			"type" : "char1024",
-			"initial" : "\"\"",
 			"access" : "PUBLIC",
 			"value" : ""
 		},
 		"checkpoint_seqnum" : {
 			"type" : "int32",
-			"initial" : "0",
 			"access" : "PUBLIC",
 			"value" : "0"
 		},
 		"checkpoint_interval" : {
 			"type" : "int32",
-			"initial" : "0",
 			"access" : "PUBLIC",
 			"value" : "0"
 		},
 		"checkpoint_keepall" : {
 			"type" : "bool",
-			"initial" : "FALSE",
 			"access" : "PUBLIC",
 			"value" : "FALSE"
 		},
 		"check_version" : {
 			"type" : "bool",
-			"initial" : "FALSE",
 			"access" : "PUBLIC",
 			"value" : "FALSE"
 		},
@@ -8601,7 +8522,6 @@
 				"RNG2" : "0x2",
 				"RNG3" : "0x3"
 			},
-			"initial" : "3",
 			"access" : "PUBLIC",
 			"value" : "RNG3"
 		},
@@ -8614,49 +8534,41 @@
 				"DONE" : "0x3",
 				"LOCKED" : "0x4"
 			},
-			"initial" : "0",
 			"access" : "PUBLIC",
 			"value" : "INIT"
 		},
 		"pauseat" : {
 			"type" : "timestamp",
-			"initial" : "NEVER",
 			"access" : "PUBLIC",
 			"value" : "NEVER"
 		},
 		"infourl" : {
 			"type" : "char1024",
-			"initial" : "http://docs.gridlabd.us/index.html?owner=hipas&project=gridlabd&search=",
 			"access" : "PUBLIC",
 			"value" : "http://docs.gridlabd.us/index.html?owner=hipas&project=gridlabd&search="
 		},
 		"hostname" : {
 			"type" : "char1024",
-			"initial" : "localhost",
 			"access" : "PUBLIC",
 			"value" : "localhost"
 		},
 		"hostaddr" : {
 			"type" : "char32",
-			"initial" : "127.0.0.1",
 			"access" : "PUBLIC",
 			"value" : "127.0.0.1"
 		},
 		"autostart_gui" : {
 			"type" : "bool",
-			"initial" : "TRUE",
 			"access" : "PUBLIC",
 			"value" : "TRUE"
 		},
 		"master" : {
 			"type" : "char1024",
-			"initial" : "\"\"",
 			"access" : "PUBLIC",
 			"value" : ""
 		},
 		"master_port" : {
 			"type" : "int64",
-			"initial" : "0",
 			"access" : "PUBLIC",
 			"value" : "0"
 		},
@@ -8668,7 +8580,6 @@
 				"SLAVE" : "0x2",
 				"LIBRARY" : "0x3"
 			},
-			"initial" : "0",
 			"access" : "PUBLIC",
 			"value" : "STANDALONE"
 		},
@@ -8679,37 +8590,31 @@
 				"MEMORY" : "0x1",
 				"SOCKET" : "0x2"
 			},
-			"initial" : "0",
 			"access" : "PUBLIC",
 			"value" : "NONE"
 		},
 		"signal_timeout" : {
 			"type" : "int32",
-			"initial" : "5000",
 			"access" : "PUBLIC",
 			"value" : "5000"
 		},
 		"slave_port" : {
 			"type" : "int16",
-			"initial" : "6267",
 			"access" : "PUBLIC",
 			"value" : "6267"
 		},
 		"slave_id" : {
 			"type" : "int64",
-			"initial" : "0",
 			"access" : "PUBLIC",
 			"value" : "0"
 		},
 		"return_code" : {
 			"type" : "int32",
-			"initial" : "0",
 			"access" : "REFERENCE",
 			"value" : "0"
 		},
 		"exit_code" : {
 			"type" : "int16",
-			"initial" : "0",
 			"access" : "REFERENCE",
 			"value" : "0"
 		},
@@ -8722,25 +8627,21 @@
 				"DEBUG" : "0x4",
 				"VERBOSE" : "0x8"
 			},
-			"initial" : "",
 			"access" : "PUBLIC",
 			"value" : "NONE"
 		},
 		"init_max_defer" : {
 			"type" : "int32",
-			"initial" : "64",
 			"access" : "REFERENCE",
 			"value" : "64"
 		},
 		"mt_analysis" : {
 			"type" : "bool",
-			"initial" : "FALSE",
 			"access" : "PUBLIC",
 			"value" : "FALSE"
 		},
 		"inline_block_size" : {
 			"type" : "int32",
-			"initial" : "1048576",
 			"access" : "PUBLIC",
 			"value" : "1048576"
 		},
@@ -8758,7 +8659,6 @@
 				"RDIR" : "0x100",
 				"RGLM" : "0x200"
 			},
-			"initial" : "",
 			"access" : "PUBLIC",
 			"value" : "TSTD|RALL"
 		},
@@ -8768,25 +8668,21 @@
 				"NAMES" : "0x10",
 				"POSITIONS" : "0x60"
 			},
-			"initial" : "",
 			"access" : "PUBLIC",
 			"value" : "NAMES|POSITIONS"
 		},
 		"sanitize_prefix" : {
 			"type" : "char8",
-			"initial" : "GLD_",
 			"access" : "PUBLIC",
 			"value" : "GLD_"
 		},
 		"sanitize_index" : {
 			"type" : "char1024",
-			"initial" : ".txt",
 			"access" : "PUBLIC",
 			"value" : ".txt"
 		},
 		"sanitize_offset" : {
 			"type" : "char32",
-			"initial" : "\"\"",
 			"access" : "PUBLIC",
 			"value" : ""
 		},
@@ -8799,115 +8695,96 @@
 				"DELTA_ITER" : "0x3",
 				"ERROR" : "0xff"
 			},
-			"initial" : "0",
 			"access" : "PUBLIC",
 			"value" : "INIT"
 		},
 		"deltamode_allowed" : {
 			"type" : "bool",
-			"initial" : "FALSE",
 			"access" : "PUBLIC",
 			"value" : "FALSE"
 		},
 		"deltamode_timestep" : {
 			"type" : "int32",
-			"initial" : "10000000",
 			"access" : "PUBLIC",
 			"value" : "10000000"
 		},
 		"deltamode_maximumtime" : {
 			"type" : "int64",
-			"initial" : "3600000000000",
 			"access" : "PUBLIC",
 			"value" : "3600000000000"
 		},
 		"deltaclock" : {
 			"type" : "int64",
-			"initial" : "0",
 			"access" : "PUBLIC",
 			"value" : "0"
 		},
 		"delta_current_clock" : {
 			"type" : "double",
-			"initial" : "+0",
 			"access" : "PUBLIC",
 			"value" : "+0"
 		},
 		"deltamode_updateorder" : {
 			"type" : "char1024",
-			"initial" : "\"\"",
 			"access" : "REFERENCE",
 			"value" : ""
 		},
 		"deltamode_iteration_limit" : {
 			"type" : "int32",
-			"initial" : "10",
 			"access" : "PUBLIC",
 			"value" : "10"
 		},
 		"deltamode_forced_extra_timesteps" : {
 			"type" : "int32",
-			"initial" : "0",
 			"access" : "PUBLIC",
 			"value" : "0"
 		},
 		"deltamode_forced_always" : {
 			"type" : "bool",
-			"initial" : "FALSE",
 			"access" : "PUBLIC",
 			"value" : "FALSE"
 		},
 		"run_powerworld" : {
 			"type" : "bool",
-			"initial" : "FALSE",
 			"access" : "PUBLIC",
 			"value" : "FALSE"
 		},
 		"bigranks" : {
 			"type" : "bool",
-			"initial" : "TRUE",
 			"access" : "PUBLIC",
 			"value" : "TRUE"
 		},
 		"exename" : {
 			"type" : "char1024",
-			"initial" : "/usr/local/opt/gridlabd/4.3.1-221207-develop_fix_json_save/bin/gridlabd.bin",
 			"access" : "REFERENCE",
-			"value" : "/usr/local/opt/gridlabd/4.3.1-221207-develop_fix_json_save/bin/gridlabd.bin"
+			"value" : "/usr/local/opt/gridlabd/4.3.1-221203-develop/bin/gridlabd.bin"
 		},
 		"wget_options" : {
 			"type" : "char1024",
-			"initial" : "\"maxsize:100MB;update:newer\"",
 			"access" : "PUBLIC",
 			"value" : "maxsize:100MB;update:newer"
 		},
 		"curl_options" : {
 			"type" : "char1024",
-			"initial" : "\"maxsize:100MB;update:newer\"",
 			"access" : "PUBLIC",
 			"value" : "maxsize:100MB;update:newer"
 		},
 		"svnroot" : {
 			"type" : "char1024",
-			"initial" : "http://gridlab-d.svn.sourceforge.net/svnroot/gridlab-d",
 			"access" : "PUBLIC",
 			"value" : "http://gridlab-d.svn.sourceforge.net/svnroot/gridlab-d"
 		},
 		"github" : {
 			"type" : "char1024",
-			"initial" : "https://github.com/gridlab-d",
 			"access" : "PUBLIC",
 			"value" : "https://github.com/gridlab-d"
 		},
 		"gitraw" : {
 			"type" : "char1024",
-			"initial" : "https://raw.githubusercontent.com/gridlab-d",
 			"access" : "PUBLIC",
 			"value" : "https://raw.githubusercontent.com/gridlab-d"
 		},
 		"allow_reinclude" : {
 			"type" : "bool",
-			"initial" : "FALSE",
 			"access" : "PUBLIC",
 			"value" : "FALSE"
 		},
@@ -8969,25 +8846,21 @@
 				"PYTHON" : "0x0",
 				"CMDARG" : "0x2"
 			},
-			"initial" : "",
 			"access" : "PUBLIC",
 			"value" : "ALL"
 		},
 		"permissive_access" : {
 			"type" : "int32",
-			"initial" : "0",
 			"access" : "PUBLIC",
 			"value" : "0"
 		},
 		"relax_undefined_if" : {
 			"type" : "bool",
-			"initial" : "FALSE",
 			"access" : "PUBLIC",
 			"value" : "FALSE"
 		},
 		"literal_if" : {
 			"type" : "bool",
-			"initial" : "TRUE",
 			"access" : "PUBLIC",
 			"value" : "TRUE"
 		},
@@ -8998,19 +8871,16 @@
 				"PRECOMMIT" : "0x1",
 				"COMMIT" : "0x2"
 			},
-			"initial" : "1414746112",
 			"access" : "PUBLIC",
 			"value" : "1414746112"
 		},
 		"daemon_configfile" : {
 			"type" : "char1024",
-			"initial" : "gridlabd.cnf",
 			"access" : "PUBLIC",
 			"value" : "gridlabd.cnf"
 		},
 		"timezone_locale" : {
 			"type" : "char1024",
-			"initial" : "PST8PDT",
 			"access" : "REFERENCE",
 			"value" : "PST8PDT"
 		},
@@ -9025,7 +8895,6 @@
 				"NOINTERNALS" : "0x1",
 				"ORIGINAL" : "0x10"
 			},
-			"initial" : "",
 			"access" : "PUBLIC",
 			"value" : "MINIMAL"
 		},
@@ -9047,57 +8916,48 @@
 				"INITIAL" : "0x4000",
 				"MINIMAL" : "0x8000"
 			},
-			"initial" : "",
 			"access" : "PUBLIC",
 			"value" : "ALL"
 		},
 		"ignore_errors" : {
 			"type" : "bool",
-			"initial" : "FALSE",
 			"access" : "PUBLIC",
 			"value" : "FALSE"
 		},
 		"keep_progress" : {
 			"type" : "bool",
-			"initial" : "FALSE",
 			"access" : "PUBLIC",
 			"value" : "FALSE"
 		},
 		"allow_variant_aggregates" : {
 			"type" : "bool",
-			"initial" : "FALSE",
 			"access" : "PUBLIC",
 			"value" : "FALSE"
 		},
 		"progress" : {
 			"type" : "double",
-			"initial" : "+0",
 			"access" : "REFERENCE",
 			"value" : "+0"
 		},
 		"server_keepalive" : {
 			"type" : "bool",
-			"initial" : "FALSE",
 			"access" : "PUBLIC",
 			"value" : "FALSE"
 		},
 		"pythonpath" : {
 			"type" : "char1024",
-			"initial" : ".",
 			"access" : "PUBLIC",
 			"value" : "."
 		},
 		"pythonexec" : {
 			"type" : "char1024",
-			"initial" : "/usr/local/Cellar/python@3.10/3.10.8/Frameworks/Python.framework/Versions/3.10/bin/python3.10",
 			"access" : "REFERENCE",
 			"value" : "/usr/local/Cellar/python@3.10/3.10.8/Frameworks/Python.framework/Versions/3.10/bin/python3.10"
 		},
 		"datadir" : {
 			"type" : "char1024",
-			"initial" : "/usr/local/opt/gridlabd/4.3.1-221207-develop_fix_json_save/share/gridlabd",
 			"access" : "PUBLIC",
-			"value" : "/usr/local/opt/gridlabd/4.3.1-221207-develop_fix_json_save/share/gridlabd"
+			"value" : "/usr/local/opt/gridlabd/4.3.1-221203-develop/share/gridlabd"
 		},
 		"json_complex_format" : {
 			"type" : "set",
@@ -9108,67 +8968,56 @@
 				"DEGREES" : "0x10",
 				"RADIANS" : "0x20"
 			},
-			"initial" : "",
 			"access" : "PUBLIC",
 			"value" : "STRING"
 		},
 		"rusage_file" : {
 			"type" : "char1024",
-			"initial" : "gridlabd-rusage.csv",
 			"access" : "PUBLIC",
 			"value" : "gridlabd-rusage.csv"
 		},
 		"rusage_rate" : {
 			"type" : "int64",
-			"initial" : "0",
 			"access" : "PUBLIC",
 			"value" : "0"
 		},
 		"rusage" : {
 			"type" : "char1024",
-			"initial" : "{}",
 			"access" : "PUBLIC",
 			"value" : "{}"
 		},
 		"echo" : {
 			"type" : "bool",
-			"initial" : "FALSE",
 			"access" : "PUBLIC",
 			"value" : "FALSE"
 		},
 		"filename" : {
 			"type" : "char1024",
-			"initial" : "\"\"",
 			"access" : "REFERENCE",
 			"value" : ""
 		},
 		"country" : {
 			"type" : "char8",
-			"initial" : "US",
 			"access" : "PUBLIC",
 			"value" : "US"
 		},
 		"region" : {
 			"type" : "char32",
-			"initial" : "CA",
 			"access" : "PUBLIC",
 			"value" : "CA"
 		},
 		"organization" : {
 			"type" : "char32",
-			"initial" : "SLAC",
 			"access" : "PUBLIC",
 			"value" : "SLAC"
 		},
 		"profile_output_format" : {
 			"type" : "set",
-			"initial" : "",
 			"access" : "PUBLIC",
 			"value" : ""
 		},
 		"maximum_runtime" : {
 			"type" : "int64",
-			"initial" : "0",
 			"access" : "PUBLIC",
 			"value" : "0"
 		},
@@ -9556,7 +9405,7 @@
 			"rank" : "0",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "16807",
-			"guid" : "5350BAF81CE4AD051B55EA11D830F2C6",
+			"guid" : "33BC4DD2F48F088447EBBCD5BA55F1B",
 			"flags" : "0x100",
 			"geometric_mean_radius": "0.0313 ft",
 			"resistance": "0.1859 Ohm/mile",
@@ -9574,7 +9423,7 @@
 			"rank" : "0",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "282475249",
-			"guid" : "5D1075B6E21E2BF6D616EB49B6494EE",
+			"guid" : "5A8DFFEA3A7505609E0C91BE5FEA931",
 			"flags" : "0x100",
 			"geometric_mean_radius": "0.00814 ft",
 			"resistance": "0.592 Ohm/mile",
@@ -9592,7 +9441,7 @@
 			"rank" : "0",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "1622650073",
-			"guid" : "4E4F1F7FC176C454484A32DCB27008C7",
+			"guid" : "72515E3D03CF0C06C5C5CD2F03083BA",
 			"flags" : "0x100",
 			"geometric_mean_radius": "0.00446 ft",
 			"resistance": "1.12 Ohm/mile",
@@ -9610,7 +9459,7 @@
 			"rank" : "0",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "984943658",
-			"guid" : "3952F393EE5EEBB4C3BD37784577BF4",
+			"guid" : "2B8F1A4B02D89A4641FFF9543242BCD3",
 			"flags" : "0x100",
 			"outer_diameter": "1.29 in",
 			"conductor_gmr": "0.0171 ft",
@@ -9636,7 +9485,7 @@
 			"rank" : "0",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "1144108930",
-			"guid" : "469EEF55B068B36741072E78D0A9C982",
+			"guid" : "7B31ACAF7ABA371167F5961299F9ADB5",
 			"flags" : "0x100",
 			"outer_diameter": "1.06 in",
 			"conductor_gmr": "0.0111 ft",
@@ -9662,7 +9511,7 @@
 			"rank" : "0",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "470211272",
-			"guid" : "933C922B4CA4F6A9D5361530BFCD00",
+			"guid" : "24B8C86F1BB7DD366118F216DC883713",
 			"flags" : "0x100",
 			"distance_AB": "2.5 ft",
 			"distance_BC": "7 ft",
@@ -9681,7 +9530,7 @@
 			"rank" : "0",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "101027544",
-			"guid" : "79677568E634273F55ED6332A9618090",
+			"guid" : "621F905C30EEE30D18AD660AAAB72B92",
 			"flags" : "0x100",
 			"distance_AB": "4.5 ft",
 			"distance_BC": "7 ft",
@@ -9700,7 +9549,7 @@
 			"rank" : "0",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "1457850878",
-			"guid" : "D62FFFEC764EA1561A3E524B8F8397D",
+			"guid" : "193DBB24C26FD69B513AA88CEAAAF251",
 			"flags" : "0x100",
 			"distance_AB": "0 ft",
 			"distance_BC": "7 ft",
@@ -9719,7 +9568,7 @@
 			"rank" : "0",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "1458777923",
-			"guid" : "4E3C8FBAEBF5F0C72263FCA26E45117F",
+			"guid" : "283565FD55A4732E4C4D098DCF1BB873",
 			"flags" : "0x100",
 			"distance_AB": "0 ft",
 			"distance_BC": "0 ft",
@@ -9738,7 +9587,7 @@
 			"rank" : "0",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "2007237709",
-			"guid" : "70B4FA4DCBDF6AC360E0C005338571B6",
+			"guid" : "322C2D971EA862603514EB67F751504C",
 			"flags" : "0x100",
 			"distance_AB": "0 ft",
 			"distance_BC": "0 ft",
@@ -9757,7 +9606,7 @@
 			"rank" : "0",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "823564440",
-			"guid" : "60955E59CD59757E4C59D6B41A2B3FD7",
+			"guid" : "11A576E6CB54AD7B4CB1329AF77FFDE5",
 			"flags" : "0x100",
 			"distance_AB": "0.5 ft",
 			"distance_BC": "0.5 ft",
@@ -9776,7 +9625,7 @@
 			"rank" : "0",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "1115438165",
-			"guid" : "55A7C9C5016C02911A0E89ED9307BAFF",
+			"guid" : "3EDA4BA2961B4A7741E86B4BCC51C78",
 			"flags" : "0x100",
 			"distance_AB": "0 ft",
 			"distance_BC": "0 ft",
@@ -9795,7 +9644,7 @@
 			"rank" : "0",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "1784484492",
-			"guid" : "71550260AEBC6D804BC6D8A49EF8489F",
+			"guid" : "3984981F31CCBBF7547E114B34BD713E",
 			"flags" : "0x100",
 			"conductor_A": "conductor1",
 			"conductor_B": "conductor1",
@@ -9831,7 +9680,7 @@
 			"rank" : "0",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "74243042",
-			"guid" : "BE016AE6704C5347B0CDCA430BCE3",
+			"guid" : "1E58724A6426362D3D069C5739CB55D",
 			"flags" : "0x100",
 			"conductor_A": "conductor2",
 			"conductor_B": "conductor2",
@@ -9867,7 +9716,7 @@
 			"rank" : "0",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "114807987",
-			"guid" : "40456D03031366D53A299FFE33C06568",
+			"guid" : "41B9DBB0C80FDA6D58CA0EA248DDE69D",
 			"flags" : "0x100",
 			"conductor_A": "",
 			"conductor_B": "conductor3",
@@ -9903,7 +9752,7 @@
 			"rank" : "0",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "1137522503",
-			"guid" : "6DAD96DF812586BB4BB80CA72BE7F99E",
+			"guid" : "31DEAA0335CBC4CF4DCEAF0EC583D027",
 			"flags" : "0x100",
 			"conductor_A": "conductor3",
 			"conductor_B": "",
@@ -9939,7 +9788,7 @@
 			"rank" : "0",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "1441282327",
-			"guid" : "4D963E7E61EF11DF2A0A7B9BC2B0C568",
+			"guid" : "23EA6C16B1F14CF057D2197AABDDE100",
 			"flags" : "0x100",
 			"conductor_A": "",
 			"conductor_B": "",
@@ -9975,7 +9824,7 @@
 			"rank" : "0",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "16531729",
-			"guid" : "658314BDBFF7CE0B232309F22529972B",
+			"guid" : "483DBB188937DDBD131A660613F598D1",
 			"flags" : "0x100",
 			"conductor_A": "conductor4",
 			"conductor_B": "conductor4",
@@ -10011,7 +9860,7 @@
 			"rank" : "0",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "823378840",
-			"guid" : "362B522FD88B94F679B6A577174397",
+			"guid" : "1370F19061FCF6265CA96561C46B132A",
 			"flags" : "0x100",
 			"conductor_A": "conductor5",
 			"conductor_B": "",
@@ -10047,7 +9896,7 @@
 			"rank" : "0",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "143542612",
-			"guid" : "1B800640853A0B58115ED52F1F124D06",
+			"guid" : "72503C1A91ADDCC54C42FF03D3042ED3",
 			"flags" : "0x100",
 			"connect_type": "WYE_WYE",
 			"install_type": "PADMOUNT",
@@ -10096,7 +9945,7 @@
 			"rank" : "0",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "896544303",
-			"guid" : "472AAC4CB8B9A3C77A8D33966B5A3E0D",
+			"guid" : "6042E188E70F2B5467E47B6F14ACE693",
 			"flags" : "0x100",
 			"connect_type": "WYE_WYE",
 			"band_center": "2300 V",
@@ -10130,7 +9979,7 @@
 			"rank" : "1",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "1474833169",
-			"guid" : "4AE8B3F2CA5F96513FD4F19EBAE01F83",
+			"guid" : "3069FA2A5F2A3F876913920B81CD337",
 			"flags" : "0x100",
 			"ice_thickness": "0 in",
 			"is_covered": "FALSE",
@@ -10183,7 +10032,7 @@
 			"rank" : "1",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "1264817709",
-			"guid" : "7358AB6EDCF4117960E5573F7710EBB8",
+			"guid" : "4AEC17F7DE36DADA6D4F7D331AFB5A07",
 			"flags" : "0x100",
 			"ice_thickness": "0 in",
 			"is_covered": "FALSE",
@@ -10236,7 +10085,7 @@
 			"rank" : "1",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "1998097157",
-			"guid" : "3FABEFE6665D36EC7A3AC85949F76B5C",
+			"guid" : "68C71B680A33471E7E3E721A7CB01D58",
 			"flags" : "0x100",
 			"ice_thickness": "0 in",
 			"is_covered": "FALSE",
@@ -10289,7 +10138,7 @@
 			"rank" : "1",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "1817129560",
-			"guid" : "38BE0504705271763B2943B71CEAF71A",
+			"guid" : "39791AB9C861A6FF169C7990A6A2D3F8",
 			"flags" : "0x100",
 			"ice_thickness": "0 in",
 			"is_covered": "FALSE",
@@ -10342,7 +10191,7 @@
 			"rank" : "1",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "1131570933",
-			"guid" : "7BDC5CC6F3E805157A0BAB3D8BCD952D",
+			"guid" : "16FD5B4AA38E3F9B35A0382EF51A1194",
 			"flags" : "0x100",
 			"ice_thickness": "0 in",
 			"is_covered": "FALSE",
@@ -10395,7 +10244,7 @@
 			"rank" : "1",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "197493099",
-			"guid" : "6815059F2B86045F3189636698AFA770",
+			"guid" : "3D6366F984223DEC7B0FB39B60A4B80C",
 			"flags" : "0x100",
 			"ice_thickness": "0 in",
 			"is_covered": "FALSE",
@@ -10448,7 +10297,7 @@
 			"rank" : "1",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "1404280278",
-			"guid" : "53A44C65743B7727A0AA7FF8C02D432",
+			"guid" : "246BC107A80521FB3958FDFA3B3026FE",
 			"flags" : "0x100",
 			"ice_thickness": "0 in",
 			"is_covered": "FALSE",
@@ -10501,7 +10350,7 @@
 			"rank" : "1",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "893351816",
-			"guid" : "237E32DB0FE665AD1A3C440E0D4D087B",
+			"guid" : "5A882888AB6941F37C33BB74487592B0",
 			"flags" : "0x100",
 			"ice_thickness": "0 in",
 			"is_covered": "FALSE",
@@ -10554,7 +10403,7 @@
 			"rank" : "1",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "1505795335",
-			"guid" : "5AAB00B0E44C400911C32B21A0597A76",
+			"guid" : "59A72FE7B82EF9B14186D064AD370E75",
 			"flags" : "0x100",
 			"configuration": "line_configuration7",
 			"length": "800 ft",
@@ -10605,7 +10454,7 @@
 			"rank" : "1",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "1954899097",
-			"guid" : "78039A6A9D65524C902C1B5D2DABF1A",
+			"guid" : "7F16BB48955697BF77893934E4C19314",
 			"flags" : "0x100",
 			"configuration": "line_configuration6",
 			"length": "500 ft",
@@ -10656,7 +10505,7 @@
 			"rank" : "1",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "1636807826",
-			"guid" : "11BBEED924930A57590972F786AA1CEE",
+			"guid" : "58F331B05415337B5FF6EE6D8069B1A8",
 			"flags" : "0x100",
 			"ice_thickness": "0 in",
 			"is_covered": "FALSE",
@@ -10709,7 +10558,7 @@
 			"rank" : "4",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "563613512",
-			"guid" : "5F15310BA8A32E1B66A181B6E47B3BEC",
+			"guid" : "1C7C567DBBE296F57D3449C7E81F88B6",
 			"flags" : "0x100",
 			"bustype": "PQ",
 			"busflags": "HASSOURCE",
@@ -10766,7 +10615,7 @@
 			"rank" : "4",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "101929267",
-			"guid" : "1C20FA293D34D4CA5378D2A3A2F2D683",
+			"guid" : "11A75B065B1975B06B502318A7F29F70",
 			"flags" : "0x100",
 			"bustype": "PQ",
 			"busflags": "HASSOURCE",
@@ -10823,7 +10672,7 @@
 			"rank" : "4",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "1580723810",
-			"guid" : "280F418AD0CAA994106ABDBE6E7DE259",
+			"guid" : "515A423745B3CFD83BAF4DC209E32390",
 			"flags" : "0x100",
 			"bustype": "PQ",
 			"busflags": "HASSOURCE",
@@ -10880,7 +10729,7 @@
 			"rank" : "6",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "704877633",
-			"guid" : "3538B115F5008DD723F3C51A5D565AE2",
+			"guid" : "1CA7A9C10F90DF56574CC152CF7ED48D",
 			"flags" : "0x100",
 			"bustype": "SWING",
 			"busflags": "HASSOURCE",
@@ -10937,7 +10786,7 @@
 			"rank" : "4",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "1358580979",
-			"guid" : "49B0EBC995B793DA7FB45EC87C565AC1",
+			"guid" : "1470F6B473CCC2E050780A55D2CFD8FA",
 			"flags" : "0x100",
 			"bustype": "PQ",
 			"busflags": "HASSOURCE",
@@ -10994,7 +10843,7 @@
 			"rank" : "4",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "1624379149",
-			"guid" : "7788ECA75A58E293825D01FA00F48E7",
+			"guid" : "71CD3D555EA2602E29DC21C42A16315B",
 			"flags" : "0x100",
 			"bustype": "PQ",
 			"busflags": "HASSOURCE",
@@ -11051,7 +10900,7 @@
 			"rank" : "4",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "2128236579",
-			"guid" : "1BA4B3B70DDCA675795F681FC68E4373",
+			"guid" : "509285BBB35A9FB22DC2FC211DDE0BE9",
 			"flags" : "0x100",
 			"load_class": "U",
 			"constant_power_A": "160000+110000j VA",
@@ -11218,7 +11067,7 @@
 			"rank" : "4",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "784558821",
-			"guid" : "1A3D07730942FC4D1C043740757F9C9C",
+			"guid" : "665EC9332BE50B033D6182B8D4D57A23",
 			"flags" : "0x100",
 			"load_class": "U",
 			"constant_power_A": "0+0j VA",
@@ -11385,7 +11234,7 @@
 			"rank" : "4",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "530511967",
-			"guid" : "77FB20513C58FCE74551B25CA0D45137",
+			"guid" : "6191ADF9136461AF4528BC130CFF4B56",
 			"flags" : "0x100",
 			"load_class": "U",
 			"constant_power_A": "0+0j VA",
@@ -11552,7 +11401,7 @@
 			"rank" : "4",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "2110010672",
-			"guid" : "56AEA4A2115DEC2965497EE8C61F4346",
+			"guid" : "64782120614CD4857FD829FF8DA88F7B",
 			"flags" : "0x100",
 			"load_class": "U",
 			"constant_power_A": "0+0j VA",
@@ -11719,7 +11568,7 @@
 			"rank" : "4",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "1551901393",
-			"guid" : "44AF6AA906D68A296DFBF66D07FEF4B3",
+			"guid" : "6231F865DEA5F9182755564F31C93EB1",
 			"flags" : "0x100",
 			"load_class": "U",
 			"constant_power_A": "385000+220000j VA",
@@ -11886,7 +11735,7 @@
 			"rank" : "4",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "1617819336",
-			"guid" : "75D806EA7BFCB6D526F8BF45368B9CFF",
+			"guid" : "4B813FA182C146F15F0AA8C37E1504EE",
 			"flags" : "0x100",
 			"load_class": "U",
 			"constant_power_A": "485000+190000j VA",
@@ -12053,7 +11902,7 @@
 			"rank" : "4",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "1399125485",
-			"guid" : "65213CD8CBB0F81D7D4288BCFEE9660",
+			"guid" : "3B183FA7192838DF48BE730AAA5C685C",
 			"flags" : "0x100",
 			"load_class": "U",
 			"constant_power_A": "0+0j VA",
@@ -12220,7 +12069,7 @@
 			"rank" : "4",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "156091745",
-			"guid" : "5DFF79471FC0BF87CDDC75925887774",
+			"guid" : "6998265185F15CA311C0217DD9EDF8BD",
 			"flags" : "0x100",
 			"load_class": "U",
 			"constant_power_A": "0+0j VA",
@@ -12388,7 +12237,7 @@
 			"rank" : "3",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "1356425228",
-			"guid" : "139B811597E0E804DC233EF1B6299E",
+			"guid" : "62BC0168A237775E1B48316DF2022581",
 			"flags" : "0x100",
 			"load_class": "U",
 			"constant_power_A": "5666.67+3333.33j VA",
@@ -12555,7 +12404,7 @@
 			"rank" : "4",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "1899894091",
-			"guid" : "37923D7701E43A853F0B0FF8C9F1A71F",
+			"guid" : "7E06F846AE146EF96DEC6FBA1226FC24",
 			"flags" : "0x100",
 			"load_class": "U",
 			"constant_power_A": "11333.3+6666.67j VA",
@@ -12722,7 +12571,7 @@
 			"rank" : "1",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "585640194",
-			"guid" : "22CF4098FCFA6571781AA268F985BB12",
+			"guid" : "3E52D9C4B9DBF6D22D03946C25EC1BF5",
 			"flags" : "0x100",
 			"phase_A_state": "CLOSED",
 			"phase_B_state": "CLOSED",
@@ -12778,7 +12627,7 @@
 			"rank" : "1",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "937186357",
-			"guid" : "63E7A3F685E312EB2D5E7EC970C78A7D",
+			"guid" : "34ACAE702B9E5AE07BE212155B70337F",
 			"flags" : "0x100",
 			"configuration": "transformer_configuration1",
 			"climate": "",
@@ -12844,7 +12693,7 @@
 			"rank" : "1",
 			"clock" : "1999-12-31 16:00:00 PST",
 			"rng_state" : "1646035001",
-			"guid" : "275692B7872D21D41D1D8E2F94AF84E6",
+			"guid" : "13C48899AAE66D877BCE61B87E15D393",
 			"flags" : "0x100",
 			"configuration": "regulator_configuration1",
 			"tap_A": "0",
