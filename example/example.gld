@@ -1,0 +1,134 @@
+{
+	"application" : "gridlabd-editor",
+	"version" : "0.0.0",
+	"data" : [
+		{
+			"type" : "comments",
+			"values" : [
+				"Development test file",
+				"Do not use for autotesting"
+			]
+		},
+		{
+			"type" : "clock",
+			"values" : {
+				"timezone" : "PST+8PDT",
+				"starttime" : "2020-01-01 00:00:00 PST",
+				"stoptime" : "2021-01-01 00:00:00 PST"
+			}
+		},
+		{
+			"type" : "modules",
+			"values" : {
+				"powerflow" : {},
+				"climate" : {},
+				"tape" : {
+					"csv_header_type" : "NAME"
+				}
+			}
+		},
+		{
+			"type" : "inputs",
+			"values" : {
+				"config.csv" : {
+					"from" : "config",
+					"type" : "config"
+				},
+				"CA-San_Francisco_Intl_Ap.tmy3" : {}
+			}
+		},
+		{
+			"type" : "globals",
+			"values" : {
+				"TEST" : {
+					"type" : "bool",
+					"value" : "TRUE"
+				},
+				"REAL" : {
+					"type" : "double",
+					"value" : "1.23",
+					"unit" : null
+				},
+				"PERCENT" : {
+					"type" : "double",
+					"value" : "1.23",
+					"unit" : "%"
+				},
+				"STRING" : {
+					"type" : "char32",
+					"value" : "test"
+				}
+			}
+		},
+		{
+			"type" : "includes",
+			"values" : {
+				"house1.glm" : {
+					"NAME" : "House 1",
+					"PHASE" : "AS"
+				},
+				"house2.glm" : {
+				}
+			}
+		},
+		{
+			"type" : "filters",
+			"values" : {}
+		},
+		{
+			"type" : "schedules",
+			"values" : {}
+		},
+		{
+			"type" : "classes",
+			"values" :  {}
+		},
+		{
+			"type" : "templates",
+			"values" : {}
+		},
+		{
+			"type" : "objects",
+			"values" : {
+				"config_1" :  {
+					"class" : "powerflow.pole_configuration"
+				},
+				"object_1" : {
+					"class" : "powerflow.pole",
+					"configuration" : "config_1"
+				},
+				"object_2" : {
+					"class" : "powerflow.pole",
+					"configuration" : "config_1"
+				},
+				"line_1_2" : {
+					"class" : "powerflow.line",
+					"from" : "object_1",
+					"to" : "object_2",
+					"length" : "1000 ft"
+				}
+			}
+		},
+		{
+			"type" : "python",
+			"values" : [
+				"import sys\nprint(sys.version)",
+				"import os\nprint(os.uname())"
+			]
+		},
+		{
+			"type" : "outputs",
+			"values" : {
+				"example_output.html" : {
+					"show" : true
+				}
+			}
+		},
+		{
+			"type" : "comments",
+			"values" : [
+				"End of test file"
+			]
+		}
+	]
+}
