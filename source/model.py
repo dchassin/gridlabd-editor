@@ -371,11 +371,20 @@ class GldModelComment(GldModelItem):
 
 class GldModel :
     """GridLAB-D editor model implementation class"""
-    def __init__(self,*args,**kwargs):
-        """Construct a new model"""
+    def __init__(self,**kwargs):
+        """Construct a new model
+
+        Arguments:
+        - filename      file to initially load
+        """
         self.data = {}
         self.index = []
         self.result = None
+        if "filename" in kwargs:
+            self.load(kwargs["filename"])
+            del kwargs["filename"]
+        if len(kwargs) > 0:
+            raise GldModelException(f"keyword '{kwargs[0]} is not valid")
 
     @staticmethod
     def guid():
@@ -653,8 +662,18 @@ if __name__ == "__main__":
                 self.assertEqual(value,model.data[key])
 
         def test_load_glm(self):
-            model = GldModel()
-            model.load("unittest/IEEE-13.glm")
+            model = GldModel(filename="unittest/IEEE-13.glm")
             self.assertEqual(len(list(model.keys())),201)
+
+        def test_load_json(self):
+            model = GldModel(filename="unittest/IEEE-13.json")
+            self.assertEqual(len(list(model.keys())),201)
+
+        def test_load_fail(self):
+            try:
+                GldModel(filename="unittest/invalid_glm.json")
+                raise AssertionError("GldModel(filename='unittest/invalid_glm.json') did not fail")
+            except GldModelException:
+                pass
 
     unittest.main()
