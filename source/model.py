@@ -429,33 +429,74 @@ class GldModel :
         for key in self.index:
             yield key, self.data[key]
 
-    def load(self,filename):
-        """Load a model from a GridLAB-D JSON file"""
+    def to_json(self):
+        return json.dumps({"index":self.index,"data":self.data})
 
-        # convert GLM to JSON
-        if filename.endswith(".glm"):
-            glmname = filename
-            filename = filename[:-4] + ".json"
-            os.system(f"gridlabd -C {glmname} -o {filename}")
-
+    def load_json(self,filename):
+        """Load a model from a JSON file"""
         with open(filename,"r") as glm:
             data = json.load(glm)
 
             # check if this is a valid JSON file
             if "application" not in data or data["application"] != "gridlabd":
                 raise GldModelException(f"{filename} is not a GridLAB-D model")
-            
-            # load items by scanning through classes derived from GldModelItem
-            for itemtype in globals():
-                itemcls = eval(itemtype)
-                if itemtype not in ["GldModel","GldModelItem"] \
-                        and itemtype.startswith("GldModel") \
-                        and hasattr(itemcls,"load"):
-                    itemcls.load(self,data)
+
+            self.from_json(data)
+
+    def from_json(self,data):
+        """Load model from JSON data"""
+        # load items by scanning through classes derived from GldModelItem
+        for itemtype in globals():
+            itemcls = eval(itemtype)
+            if itemtype not in ["GldModel","GldModelItem"] \
+                    and itemtype.startswith("GldModel") \
+                    and hasattr(itemcls,"load"):
+                itemcls.load(self,data)
+
+    def load(self,filename):
+        """Load a model from a file
+
+        Supports GLM, GLD, and general JSON formatted files
+        """
+
+        # convert GLM to JSON
+        if filename.endswith(".gld"):
+            gld = json.load(filename)
+            self.index = gld["index"]
+            self.data = gld["data"]
+        else:
+            if filename.endswith(".glm"):
+                glmname = filename
+                filename = filename[:-4] + ".json"
+                os.system(f"gridlabd -C {glmname} -o {filename}")
+            self.load_json(filename)
 
     def glm(self):
         """Compile a GLM file from the model"""
         return "\n".join([self.data[guid].glm() for guid in self.index]) 
+
+    def save(self,filename):
+        if filename.endswith(".glm"):
+            with open(filename,"w") as fh:
+                fh.write(self.glm)
+        elif filename.endswith(".gld"):
+            with open(filename,"w") as fh:
+                data = {}
+                for key,value in self.data.items():
+                    data[key] = value.dict()
+                jsondata = {
+                    "application" : "gridlabd-editor",
+                    "version" : "1.0.1",
+                    "index" : self.index,
+                    "data" : data
+                    }
+                json.dump(jsondata,fh,indent=4)
+        elif filename.endswith(".json"):
+            with tempfile.NamedTemporaryFile(dir="/tmp",suffix=".glm") as tmpname:
+                glm = self.glm()
+                tmpname.write(glm.encode('utf-8'))
+                tmpname.flush()
+                command = ["gridlabd","-W","/tmp",tmpname,"-o",filename]
 
     def run(self,pre_options=[],post_options=[],workdir=".",
             saveglm='onerror',timeout=60,exception=True):
@@ -675,5 +716,9 @@ if __name__ == "__main__":
                 raise AssertionError("GldModel(filename='unittest/invalid_glm.json') did not fail")
             except GldModelException:
                 pass
+
+        def test_save_gld(self):
+            model = GldModel(filename="unittest/IEEE-13.glm")
+            model.save("unittest/IEEE-13.gld")
 
     unittest.main()
