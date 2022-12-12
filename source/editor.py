@@ -89,6 +89,8 @@ import outputview
 import importdialog
 import exportdialog
 
+from model import GldModel
+
 #
 # GridLAB-D link
 #
@@ -280,8 +282,9 @@ class Editor(Tk):
         if not filename:
             return
         try:
-            with open(filename,"r") as f: 
-                filedata = json.load(f)
+            # with open(filename,"r") as f: 
+            #     filedata = json.load(f)
+            filedata = GldModel(filename=filename)
             if self.set_model(filedata):
                 self.set_title(filename)
         except Exception as msg:
