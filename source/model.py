@@ -7,17 +7,21 @@ import os, sys, subprocess, asyncio
 import json
 import tempfile
 
+# attributes needed to manage data in editor
 IID = "IID"
 ITYPE = "ITYPE"
 IPARENT = "IPARENT"
 ATTRIBUTES = [ITYPE,IPARENT,IID]
 
+# properties that should not be available to get_data() calls
 HIDDEN_PROPERTIES = [
     "class",
     "id",
     "rank",
     "flags",
     ]
+
+# globals that should not be saved in GLM files
 HIDDEN_GLOBALS = [
     ]
 
@@ -482,12 +486,15 @@ class GldModel :
         elif filename.endswith(".gld"):
             with open(filename,"w") as fh:
                 data = {}
+                attr = {}
                 for key,value in self.data.items():
                     data[key] = value.dict()
+                    attr[key] = dict(zip(ATTRIBUTES,[getattr(value,tag) for tag in ATTRIBUTES]))
                 jsondata = {
                     "application" : "gridlabd-editor",
                     "version" : "1.0.1",
                     "index" : self.index,
+                    "attr" : attr,
                     "data" : data
                     }
                 json.dump(jsondata,fh,indent=4)
@@ -666,7 +673,7 @@ if __name__ == "__main__":
         def test_model_run(self):
             model = GldModel()
             model.load("unittest/valid_glm.json")
-            result = model.run(saveglm='always')
+            result = model.run(saveglm='always',workdir='unittest')
             with open("unittest/test.glm","w") as fh:
                 fh.write(result.glm)
             with open("unittest/test.out","w") as fh:
@@ -678,7 +685,7 @@ if __name__ == "__main__":
         def test_model_run_timeout(self):
             model = GldModel()
             model.load("unittest/valid_glm.json")
-            r = model.run(saveglm='never',timeout=0.1,exception=False)
+            r = model.run(saveglm='never',timeout=0.1,exception=False,workdir='unittest')
             self.assertEqual(r.returncode,-1)
             self.assertTrue(r.stderr.startswith("EXCEPTION: TimeoutExpired"))
 
