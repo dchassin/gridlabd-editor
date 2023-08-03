@@ -103,6 +103,11 @@ bin_path = install_path + "/bin"
 lib_path = install_path + "/lib/gridlabd"
 include_path = install_path + "/include/gridlabd"
 share_path = install_path + "/share/gridlabd"
+
+result = subprocess.run(f"{preferences.Preferences().get('GridLAB-D executable')} python --version".split(),capture_output=True)
+python_version = result.stdout.decode("utf-8").strip().split("\n")[0].split(' ')[1]
+python_path = install_path + f"/lib/python{'.'.join(python_version.split('.')[0:2])}/site-packages"
+sys.path.append(python_path)
 try:
     import gridlabd
 except:

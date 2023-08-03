@@ -39,9 +39,10 @@ default_preferences = {
         "description" : "Enable output of exception traceback data",
         },
     "GridLAB-D executable" : {
-        "value" : "/usr/local/bin/gridlabd",
+        "value" : "/usr/local/opt/gridlabd/current/bin/gridlabd",
         "description" : "GridLAB-D executable",
         }
+    
     }
 
 class Preferences(simpledialog.Dialog):
